@@ -1,0 +1,16 @@
+# PHP prj
+/build/
+/cache.properties
+
+# composer
+/vendor/
+/composer.lock
+
+# travis
+/travis/
+
+# bin
+/composer.phar
+/php-cs-fixer.phar
+
+/.coveralls.yml
