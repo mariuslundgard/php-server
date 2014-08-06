@@ -6,13 +6,13 @@ class Request
 {
     const WILDCARD_PREFIX = 'wildcard_';
 
-	protected $method;
+    protected $method;
     protected $uri;
     protected $headers;
 
     public function __construct($method = 'GET', $uri = '/')
     {
-    	$this->method = $method;
+        $this->method = $method;
         $this->uri = $uri;
         $this->headers = [];
     }

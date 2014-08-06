@@ -8,25 +8,27 @@ class RequestMatcher
 
     public static function matches(Request $req, array $params)
     {
-    	$params += array(
-    		'method' => '*',
-    		'pattern' => '*',
-    	);
+        $params += array(
+            'method' => '*',
+            'pattern' => '*',
+        );
 
-    	// test `method`
-    	if ('*' !== $params['method'] && $params['method'] !== $req->method) {
-    		return false;
-    	}
+        // test `method`
+        if ('*' !== $params['method'] && $params['method'] !== $req->method) {
+            return false;
+        }
 
-    	// test `pattern`
-    	if ('*' === $params['pattern']) {
-    		return ['uri' => $req->uri];
-    	}
+        // test `pattern`
+        if ('*' === $params['pattern']) {
+            return ['uri' => $req->uri];
+        }
 
-        $pattern = static::_compileUriPattern($params['pattern']);
+        $pattern = static::compileUriPattern($params['pattern']);
+
+        $matches = array();
 
         if (preg_match_all($pattern, $req->uri, $matches)) {
-        	// print_r($matches);
+            // print_r($matches);
             // TODO: return named matches
             return true;
         }
@@ -34,7 +36,7 @@ class RequestMatcher
         return false;
     }
 
-    protected static function _compileUriPattern($pattern)
+    protected static function compileUriPattern($pattern)
     {
         // Convert all characters to safe characters
         $pattern = preg_quote($pattern, '~');

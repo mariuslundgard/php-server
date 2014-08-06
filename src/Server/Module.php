@@ -4,7 +4,7 @@ namespace Server;
 
 class Module extends Stack
 {
-	protected $routes;
+    protected $routes;
 
     public function __construct(LayerInterface $next = null, array $config = [], array $env = [])
     {
@@ -20,6 +20,6 @@ class Module extends Stack
 
     public function map(array $params)
     {
-    	$this->routes[] = $params;
+        $this->routes[] = $params;
     }
 }
