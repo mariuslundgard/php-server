@@ -16,9 +16,9 @@ class ErrorTest extends Base
 
     public function test404()
     {
-    	$err = new Error('Testing `Not found` error');
+    	$err = new Error('Testing `Not found` error', 404);
 
         $this->assertInstanceOf('Server\Error', $err);
-        $this->assertEquals($err->getCode(), 500);
+        $this->assertEquals($err->getCode(), 404);
     }
 }
