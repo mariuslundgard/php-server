@@ -21,7 +21,6 @@ class Module extends Stack
             $req = new Request();
         }
 
-
         foreach ($this->routes as $params) {
             $params += array( 'pattern' => null );
             $matchParams = array();
@@ -33,7 +32,7 @@ class Module extends Stack
 
                 if (is_array($data)) {
                     $res->data->set($data);
-                } else if (is_string($data)) {
+                } elseif (is_string($data)) {
                     $res->write($data);
                 }
 
@@ -66,7 +65,6 @@ class Module extends Stack
             return call_user_func_array([$controller, $params['action']], $matchParams);
 
         } elseif ($params['fn']) {
-
             return call_user_func_array($params['fn'], array_merge([$req, $res], $matchParams));
 
         }
