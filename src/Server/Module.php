@@ -17,8 +17,6 @@ class Module extends Stack
 
     public function call(Request $req = null, Error $err = null)
     {
-        $this->d($this->dump());
-
         if (! $req) {
             $req = new Request();
         }
