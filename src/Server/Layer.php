@@ -3,9 +3,12 @@
 namespace Server;
 
 use Util\Dictionary;
+use Debug\DebuggableTrait;
 
 class Layer implements LayerInterface
 {
+    use DebuggableTrait;
+
     protected $next;
     protected $config;
     protected $app;
@@ -16,13 +19,16 @@ class Layer implements LayerInterface
         $this->config = new Dictionary($config);
     }
 
+    public function configure(array $config)
+    {
+        $this->config->merge($config);
+
+        return $this;
+    }
+
     public function call(Request $req, Error $err = null)
     {
-        if ($this->next) {
-            return $this->next->call($req, $err);
-        }
-
-        return new Response($req);
+        return $this->next ? $this->next->call($req, $err) : new Response($req);
     }
 
     public function setApp(LayerInterface $app)
@@ -33,5 +39,13 @@ class Layer implements LayerInterface
     public function setNext(LayerInterface $next)
     {
         $this->next = $next;
+    }
+
+    public function dump()
+    {
+        return array(
+            'class' => get_class($this),
+            'next' => $this->next ? $this->next->dump() : null
+        );
     }
 }

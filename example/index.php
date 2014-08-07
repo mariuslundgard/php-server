@@ -10,6 +10,7 @@ class CustomMiddleware extends Server\Layer
 {
     public function call(Server\Request $req = null, Server\Error $err = null)
     {
+        d('custom');
         $res = parent::call($req, $err);
         $res->write('<h1>Hello, world!</h1>');
         return $res;

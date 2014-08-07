@@ -17,27 +17,31 @@ class Module extends Stack
 
     public function call(Request $req = null, Error $err = null)
     {
+        $this->d($this->dump());
+
         if (! $req) {
             $req = new Request();
         }
 
-        foreach ($this->routes as $params) {
-            $params += array( 'pattern' => null );
-            $matchParams = array();
+        if (! $this->isResolved) {
+            foreach ($this->routes as $params) {
+                $params += array( 'pattern' => null );
+                $matchParams = array();
 
-            if (! $params['pattern'] || $matchParams = RequestMatcher::matches($req, $params)) {
-                $res = $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
+                if (! $params['pattern'] || $matchParams = RequestMatcher::matches($req, $params)) {
+                    $res = $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
 
-                $data = $this->callAction($req, $res, $params, $matchParams);
+                    $data = $this->callAction($req, $res, $params, $matchParams);
 
-                if (is_array($data)) {
-                    $res->data->set($data);
-                } elseif (is_string($data)) {
-                    $res->write($data);
+                    if (is_array($data)) {
+                        $res->data->set($data);
+                    } elseif (is_string($data)) {
+                        $res->write($data);
+                    }
+
+                    // TODO: tell application to NOT look for more routes
+                    return $res;
                 }
-
-                // TODO: tell application to not look for more routes
-                return $res;
             }
         }
 

@@ -6,14 +6,14 @@ use PHPUnit_Framework_TestCase as Base;
 
 class TestStack extends Stack
 {
-	public function call(Request $req = null, Error $err = null)
-	{
-		$res = parent::call($req, $err);
+    public function call(Request $req = null, Error $err = null)
+    {
+        $res = $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
 
-		$res->write($this->config['body'] ? $this->config['body'] : 'test-layer');
+        $res->write($this->config['body'] ? $this->config['body'] : 'test-layer');
 
-		return $res;
-	}
+        return $res;
+    }
 }
 
 class StackTest extends Base
@@ -27,13 +27,13 @@ class StackTest extends Base
 
     public function testEmploy()
     {
-    	$stack = new Stack();
+        $stack = new Stack();
 
-    	$stack->employ([
-    		'class' => 'Server\TestStack'
-    	]);
+        $stack->employ(array(
+            'class' => 'Server\TestStack'
+        ));
 
-    	$this->assertEquals($stack->count(), 1);
+        $this->assertEquals($stack->count(), 1);
     }
 
     /**
@@ -41,13 +41,13 @@ class StackTest extends Base
      */
     public function testEmployNonexistingClassThrowsError()
     {
-    	$stack = new Stack();
+        $stack = new Stack();
 
-    	$stack->employ([
-    		'class' => 'TestStack'
-    	]);
+        $stack->employ(array(
+            'class' => 'TestStack'
+        ));
 
-    	$app = $stack->resolve();
+        $app = $stack->resolve();
     }
 
     /**
@@ -55,81 +55,95 @@ class StackTest extends Base
      */
     public function testEmployInsuffientFrameParametersThrowsError()
     {
-    	$stack = new Stack();
+        $stack = new Stack();
 
-    	$stack->employ([]);
+        $stack->employ(array());
 
-    	$app = $stack->resolve();
+        $app = $stack->resolve();
     }
 
     public function testResolve()
     {
-    	$stack = new Stack();
+        $stack = new Stack();
 
-    	$stack->employ(array(
-    		'class' => 'Server\TestStack'
-    	));
+        $stack->employ(array(
+            'class' => 'Server\TestStack'
+        ));
 
-    	$app = $stack->resolve();
+        $app = $stack->resolve();
 
-    	$this->assertInstanceOf('Server\Stack', $app);
+        $this->assertInstanceOf('Server\Stack', $app);
     }
 
     public function testEmployAndResolveInstance()
     {
         $stack = new Stack();
 
-        $stack->employ([
+        $stack->employ(array(
             'instance' => new TestStack(),
-        ]);
+        ));
 
-        $stack->resolve();
+        $app = $stack->resolve();
     }
 
     public function testCallsTestLayer()
     {
-    	$stack = new Stack();
+        $stack = new Stack();
 
-    	$expectedBody = 'test-resolve';
+        $expectedBody = 'test-resolve';
 
-    	$stack->employ(array(
-    		'class' => 'Server\TestStack',
-    		'config' => array(
-    			'body' => 'test-resolve'
-    		)
-    	));
+        $stack->employ(array(
+            'class' => 'Server\TestStack',
+            'config' => array(
+                'body' => 'test-resolve'
+            )
+        ));
 
-    	$app = $stack->resolve();
+        $res = $stack->call();
 
-    	$res = $app->call();
-
-    	$this->assertEquals($res->body, 'test-resolve');
-
-    	// $this->assertInstanceOf('Server\Stack', $app);
+        $this->assertEquals($res->body, 'test-resolve');
     }
 
     public function testResolveBasedOnUriPath()
     {
-    	$stack = new Stack();
+        $stack = new Stack();
 
-    	$stack->employ([
-    		'pattern' => '/foo*',
-    		'class' => 'Server\TestStack',
-    		'config' => [ 'body' => 'foo' ],
-    	]);
+        $stack->employ(array(
+            'pattern' => '/foo*',
+            'class' => 'Server\TestStack',
+            'config' => array( 'body' => 'foo' )
+        ));
 
-    	$stack->employ([
-    		'pattern' => '/bar*',
-			'class' => 'Server\TestStack',
-			'config' => [ 'body' => 'bar' ],
-    	]);
+        $stack->employ(array(
+            'pattern' => '/bar*',
+            'class' => 'Server\TestStack',
+            'config' => array( 'body' => 'bar' )
+        ));
 
-    	$req = new Request('GET', '/foo');
+        $req = new Request('GET', '/foo');
 
-    	$app = $stack->resolve($req);
+        $app = $stack->resolve($req);
 
-    	$res = $app->call($req);
+        $res = $app->call($req);
 
-    	$this->assertEquals('foo', $res->body);
+        $this->assertEquals('foo', $res->body);
+    }
+
+    public function testChainedCall()
+    {
+        $res = (new Stack())
+
+            ->employ(array(
+                'class' => 'Server\TestStack'
+            ))
+            ->employ(array(
+                'class' => 'Server\TestStack'
+            ))
+            ->employ(array(
+                'class' => 'Server\TestStack'
+            ))
+            ->call();
+
+        $this->assertEquals('test-layertest-layertest-layer', $res->body);
     }
 }

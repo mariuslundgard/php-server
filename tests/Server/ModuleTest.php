@@ -42,14 +42,14 @@ class ModuleTest extends Base
 
     public function testMap()
     {
-    	$module = new Module();
+        $module = new Module();
 
-    	$module->map([
-    		'pattern' => '*',
-    		'fn' => function ($req, $res) {
+        $module->map([
+            'pattern' => '*',
+            'fn' => function ($req, $res) {
 
-    		}
-    	]);
+            }
+        ]);
     }
 
     public function testMapToController()

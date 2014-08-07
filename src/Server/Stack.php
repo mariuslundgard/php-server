@@ -20,28 +20,17 @@ class Stack extends Layer
         $this->isResolved = false;
     }
 
-    public function configure(array $config)
-    {
-        $this->config->merge($config);
-
-        return $this;
-    }
-
     public function call(Request $req = null, Error $err = null)
     {
         if (! $req) {
             $req = new Request();
         }
 
-        if (! $this->isResolved) {
-            $this->isResolved = true;
-
-            if ($app = $this->resolve($req)) {
-                return $app->call($req, $err);
-            }
+        if ($app = $this->resolve($req)) {
+            return $app->call($req, $err);
         }
 
-        return parent::call($req, $err);
+        return $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
     }
 
     public function employ(array $params)
@@ -53,13 +42,18 @@ class Stack extends Layer
 
     public function resolve(Request $req = null)
     {
+        if ($this->isResolved) {
+            return null;
+        }
+
+        $this->isResolved = true;
+
         $next = $this;
 
         foreach ($this->stack as $params) {
             $params += array( 'pattern' => null, 'class' => null, 'instance' => null, 'config' => array() );
 
             if (! $params['pattern'] || RequestMatcher::matches($req, $params)) {
-
                 if ($params['class']) {
                     if (! class_exists($params['class'])) {
                         throw new Error('The stack frame class does not exist');
@@ -72,11 +66,11 @@ class Stack extends Layer
                 } elseif ($params['instance']) {
                     $instance = $params['instance'];
                     $instance->setNext($next);
-                    $instance->configure($params['config']);
                 } else {
                     throw new Error('The stack frame parameters are insuffient');
                 }
 
+                $instance->configure($params['config']);
                 $next = $instance;
             }
         }
