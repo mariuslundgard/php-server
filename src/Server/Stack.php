@@ -23,6 +23,7 @@ class Stack extends Layer
     public function configure(array $config)
     {
         $this->config->merge($config);
+
         return $this;
     }
 
@@ -46,6 +47,7 @@ class Stack extends Layer
     public function employ(array $params)
     {
         $this->stack->push($params);
+
         return $this;
     }
 
