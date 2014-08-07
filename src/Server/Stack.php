@@ -9,6 +9,7 @@ class Stack extends Layer
 {
     protected $env;
     protected $stack;
+    protected $isResolved;
 
     public function __construct(LayerInterface $next = null, array $config = array(), array $env = array())
     {
@@ -16,11 +17,13 @@ class Stack extends Layer
 
         $this->env = $env;
         $this->stack = new SplStack();
+        $this->isResolved = false;
     }
 
     public function configure(array $config)
     {
         $this->config->merge($config);
+        return $this;
     }
 
     public function call(Request $req = null, Error $err = null)
@@ -29,12 +32,21 @@ class Stack extends Layer
             $req = new Request();
         }
 
+        if (! $this->isResolved) {
+            $this->isResolved = true;
+
+            if ($app = $this->resolve($req)) {
+                return $app->call($req, $err);
+            }
+        }
+
         return parent::call($req, $err);
     }
 
     public function employ(array $params)
     {
         $this->stack->push($params);
+        return $this;
     }
 
     public function resolve(Request $req = null)
