@@ -2,7 +2,7 @@ php-server
 =========
 
 [![Build Status](https://travis-ci.org/mariuslundgard/php-server.svg?branch=develop)](https://travis-ci.org/mariuslundgard/php-server)
-[![Coverage Status](https://img.shields.io/coveralls/mariuslundgard/php-server.svg)](https://coveralls.io/r/mariuslundgard/php-server?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/mariuslundgard/php-server/badge.png?branch=develop)](https://coveralls.io/r/mariuslundgard/php-server?branch=develop)
 
 ```php
 use Server\Stack as App;
