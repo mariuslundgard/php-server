@@ -10,7 +10,7 @@ class RequestMatcher
     {
         $params += array(
             'method' => '*',
-            'pattern' => '*',
+            'pattern' => '*'
         );
 
         // test `method`
@@ -25,12 +25,20 @@ class RequestMatcher
 
         $pattern = static::compileUriPattern($params['pattern']);
 
+        // Note: only to avoid PHP CS error
         $matches = array();
 
         if (preg_match_all($pattern, $req->uri, $matches)) {
-            // print_r($matches);
-            // TODO: return named matches
-            return true;
+
+            // return named uri parameters
+            $ret = [];
+            foreach ($matches as $key => $val) {
+                if (! is_numeric($key)) {
+                    $ret[$key] = $val[0];
+                }
+            }
+
+            return $ret;
         }
 
         return false;
