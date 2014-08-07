@@ -48,16 +48,28 @@ class RequestMatcherTest extends Base
         ), RequestMatcher::matches($req, $params));
     }
 
-    // public function testMatchNamedRegex()
-    // {
-    //     $req = new Request('GET', '/testing/1/2/3');
+    public function testMatchNamedRegex()
+    {
+        $req = new Request('GET', '/testing/1/2/3');
 
-    //     $params = array(
-    //         'pattern' => '/testing/:id:<[^.]+>',
-    //     );
+        $params = array(
+            'pattern' => '/testing/:path<[^.]+>',
+        );
 
-    //     $this->assertEquals(array(
-    //         'path' => '1/2/3',
-    //     ), RequestMatcher::matches($req, $params));
-    // }
+        $this->assertEquals(array(
+            'path' => '1/2/3',
+        ), RequestMatcher::matches($req, $params));
+    }
+
+    public function testNonmatchingMethod()
+    {
+        $req = new Request('POST', '/test');
+
+        $params = array(
+            'method' => 'GET',
+            'pattern' => '/test',
+        );
+
+        $this->assertFalse(RequestMatcher::matches($req, $params));
+    }
 }

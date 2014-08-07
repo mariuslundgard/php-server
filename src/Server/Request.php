@@ -20,6 +20,10 @@ class Request
     public function __get($property)
     {
         switch ($property) {
+
+            case 'method':
+                return $this->method;
+
             case 'uri':
                 return $this->uri;
 
