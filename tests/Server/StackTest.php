@@ -128,22 +128,4 @@ class StackTest extends Base
 
         $this->assertEquals('foo', $res->body);
     }
-
-    public function testChainedCall()
-    {
-        $res = (new Stack())
-
-            ->employ(array(
-                'class' => 'Server\TestStack'
-            ))
-            ->employ(array(
-                'class' => 'Server\TestStack'
-            ))
-            ->employ(array(
-                'class' => 'Server\TestStack'
-            ))
-            ->call();
-
-        $this->assertEquals('test-layertest-layertest-layer', $res->body);
-    }
 }
