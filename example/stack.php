@@ -30,7 +30,7 @@ $stack->employ(array(
     'config' => array( 'body' => 'bar' )
 ));
 
-$req = new Request('GET', '/foo');
+$req = new Server\Request('GET', '/foo');
 
 $res = $stack->call($req);
 
