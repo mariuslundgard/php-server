@@ -18,12 +18,16 @@ class RequestMatcher
             return false;
         }
 
+        // d($params);
+
         // test `pattern`
         if ('*' === $params['pattern']) {
             return ['uri' => $req->uri];
         }
 
         $pattern = static::compileUriPattern($params['pattern']);
+
+        // d($pattern, ' === ', $req->uri);
 
         // Note: only to avoid PHP CS error
         $matches = array();

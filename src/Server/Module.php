@@ -21,23 +21,18 @@ class Module extends Stack
             $req = new Request();
         }
 
-        if (! $this->isResolved) {
+        $topLevelApp = $this->getTopLevelApp();
+
+        if (static::STATE_DONE !== $topLevelApp->getState() && (! $this->next && static::STATE_LOOP === $this->state || $this->next)) {
             foreach ($this->routes as $params) {
                 $params += array( 'pattern' => null );
                 $matchParams = array();
 
-                if (! $params['pattern'] || $matchParams = RequestMatcher::matches($req, $params)) {
+                if (! $params['pattern'] || is_array($matchParams = RequestMatcher::matches($req, $params))) {
+                    $topLevelApp->setState(static::STATE_DONE);
                     $res = $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
+                    $this->callAction($req, $res, $params, $matchParams);
 
-                    $data = $this->callAction($req, $res, $params, $matchParams);
-
-                    if (is_array($data)) {
-                        $res->data->set($data);
-                    } elseif (is_string($data)) {
-                        $res->write($data);
-                    }
-
-                    // TODO: tell application to NOT look for more routes
                     return $res;
                 }
             }
@@ -49,6 +44,7 @@ class Module extends Stack
     public function map(array $params)
     {
         $this->routes[] = $params;
+
         return $this;
     }
 
@@ -62,16 +58,22 @@ class Module extends Stack
                 throw new Error('The controller was not found: '.$params['controller']);
             }
 
+            // TODO: use Instantiator?
             $refl = new ReflectionClass($params['controller']);
             $controller = $refl->newInstanceArgs([$this, $req, $res]);
 
-            return call_user_func_array([$controller, $params['action']], $matchParams);
+            $data = call_user_func_array([$controller, $params['action']], $matchParams);
 
         } elseif ($params['fn']) {
-            return call_user_func_array($params['fn'], array_merge([$req, $res], $matchParams));
-
+            $data = call_user_func_array($params['fn'], array_merge([$req, $res], $matchParams));
+        } else {
+            throw new Error('Insufficient route parameters');
         }
 
-        throw new Error('Insufficient route parameters');
+        if (is_array($data)) {
+            $res->data->set($data);
+        } elseif (is_string($data)) {
+            $res->write($data);
+        }
     }
 }

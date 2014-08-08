@@ -7,9 +7,14 @@ use ReflectionClass;
 
 class Stack extends Layer
 {
+    const STATE_IDLE = 0;
+    const STATE_LOOP = 1;
+    const STATE_DONE = 2;
+
     protected $env;
     protected $stack;
-    protected $isResolved;
+    // protected $isResolved;
+    protected $state;
 
     public function __construct(LayerInterface $next = null, array $config = array(), array $env = array())
     {
@@ -17,7 +22,20 @@ class Stack extends Layer
 
         $this->env = $env;
         $this->stack = new SplStack();
-        $this->isResolved = false;
+        // $this->isResolved = false;
+        $this->state = static::STATE_IDLE;
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
     }
 
     public function call(Request $req = null, Error $err = null)
@@ -42,21 +60,25 @@ class Stack extends Layer
 
     public function resolve(Request $req = null)
     {
-        if ($this->isResolved) {
+        if (static::STATE_IDLE !== $this->state) {
+        // if ($this->isResolved) {
             return null;
         }
 
-        $this->isResolved = true;
+        $this->setState(static::STATE_LOOP);
+        // $this->isResolved = true;
 
         $next = $this;
 
         foreach ($this->stack as $params) {
             $params += array( 'pattern' => null, 'class' => null, 'instance' => null, 'config' => array() );
+            $matchParams = array();
 
-            if (! $params['pattern'] || RequestMatcher::matches($req, $params)) {
+            if (! $params['pattern'] || $matchParams = RequestMatcher::matches($req, $params)) {
+
                 if ($params['class']) {
                     if (! class_exists($params['class'])) {
-                        throw new Error('The stack frame class does not exist');
+                        throw new Error('The stack frame class does not exist: '.$params['class']);
                     }
                     // TODO: use Instantiator?
                     // $instantiator = new \Instantiator\Instantiator();
@@ -70,7 +92,7 @@ class Stack extends Layer
                     throw new Error('The stack frame parameters are insuffient');
                 }
 
-                $instance->configure($params['config']);
+                $instance->configure($matchParams + $params['config']);
                 $next = $instance;
             }
         }

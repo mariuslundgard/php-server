@@ -36,6 +36,16 @@ class Layer implements LayerInterface
         $this->app = $app;
     }
 
+    public function getApp()
+    {
+        return $this->app;
+    }
+
+    public function getTopLevelApp()
+    {
+        return $this->next ? $this->next->getTopLevelApp() : $this;
+    }
+
     public function setNext(LayerInterface $next)
     {
         $this->next = $next;
