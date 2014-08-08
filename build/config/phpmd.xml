@@ -31,7 +31,6 @@
     <rule ref="rulesets/codesize.xml">
         <exclude name="TooManyMethods"/>
         <exclude name="ExcessiveClassComplexity"/>
-        <exclude name="CyclomaticComplexity"/>
     </rule>
     <rule ref="rulesets/codesize.xml/TooManyMethods">
         <properties>
