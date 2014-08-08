@@ -34,6 +34,19 @@ class Response
         }
     }
 
+    public function __set($property, $value)
+    {
+        switch ($property) {
+
+            case 'body':
+                $this->body = $value;
+                break;
+
+            default:
+                throw new Error('Nonexisting response property: '.$property);
+        }
+    }
+
     public function write($str)
     {
         $this->body .= $str;
