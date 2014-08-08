@@ -49,6 +49,7 @@ class Module extends Stack
     public function map(array $params)
     {
         $this->routes[] = $params;
+        return $this;
     }
 
     public function callAction(Request $req, Response $res, array $params, array $matchParams)
