@@ -9,8 +9,6 @@ php-server
 
 require 'vendor/autoload.php';
 
-use Server\Stack as App;
-
 class CustomMiddleware extends Server\Layer
 {
 	public function call(Server\Request $req = null, Server\Error $err = null)
@@ -23,7 +21,7 @@ class CustomMiddleware extends Server\Layer
 	}
 }
 
-$app = new App();
+$app = new Server\Module();
 
 $app->employ([
 	'class' => 'CustomMiddleware',
