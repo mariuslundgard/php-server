@@ -26,7 +26,7 @@ class TestModule extends Module
 {
     public function call(Request $req = null, Error $err = null)
     {
-        $res = $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
+        $res = parent::call($req, $err);
 
         $res->write($this->config['body'] ? $this->config['body'] : 'test-layer');
 
@@ -169,11 +169,20 @@ class ModuleTest extends Base
 
             ->call();
 
-        $this->assertEquals('test-layertest-layertest-layer', $res->body);
+        $this->assertEquals('testtest-layertest-layertest-layer', $res->body);
     }
 
     public function testCallOrder()
     {
+        $app = new Module();
 
+        $app->employ(array( 'class' => 'Server\TestModule', 'config' => array( 'body' => '1:' )));
+        $app->employ(array( 'class' => 'Server\TestModule', 'config' => array( 'body' => '2:' )));
+        $app->employ(array( 'class' => 'Server\TestModule', 'config' => array( 'body' => '3:' )));
+        $app->employ(array( 'class' => 'Server\TestModule', 'config' => array( 'body' => '4:' )));
+
+        $app->map(array( 'fn' => function ($req, $res) { $res->write('test:'); }));
+
+        $this->assertEquals('test:4:3:2:1:', $app->call()->body);
     }
 }
