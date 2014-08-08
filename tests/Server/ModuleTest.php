@@ -22,6 +22,18 @@ class TestController extends Controller
     }
 }
 
+class TestModule extends Module
+{
+    public function call(Request $req = null, Error $err = null)
+    {
+        $res = $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
+
+        $res->write($this->config['body'] ? $this->config['body'] : 'test-layer');
+
+        return $res;
+    }
+}
+
 class ModuleTest extends Base
 {
     public function testCreate()
@@ -137,4 +149,31 @@ class ModuleTest extends Base
         $res = $module->call();
     }
 
+    public function testChainedCall()
+    {
+        $res = (new Module())
+
+            ->employ(array(
+                'class' => 'Server\TestModule'
+            ))
+            ->employ(array(
+                'class' => 'Server\TestModule'
+            ))
+            ->employ(array(
+                'class' => 'Server\TestModule'
+            ))
+
+            ->map([
+                'controller' => 'Server\TestController',
+            ])
+
+            ->call();
+
+        $this->assertEquals('test-layertest-layertest-layer', $res->body);
+    }
+
+    public function testCallOrder()
+    {
+
+    }
 }
