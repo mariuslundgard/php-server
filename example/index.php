@@ -4,20 +4,17 @@ putenv('DEBUG=1');
 
 require __DIR__.'/../vendor/autoload.php';
 
-use Server\Module as App;
-
 class CustomMiddleware extends Server\Layer
 {
     public function call(Server\Request $req = null, Server\Error $err = null)
     {
-        d('custom');
         $res = parent::call($req, $err);
         $res->write('<h1>Hello, world!</h1>');
         return $res;
     }
 }
 
-$app = new App();
+$app = new Server\Module();
 
 $app->employ([
     'class' => 'CustomMiddleware',

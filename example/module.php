@@ -4,17 +4,10 @@ putenv('DEBUG=1');
 
 require __DIR__.'/../vendor/autoload.php';
 
-use Server\Module;
-// use Server\Layer;
-// use Server\Request;
-// use Server\Error;
-use Server\Controller;
-
-class TestController extends Controller
+class TestController extends Server\Controller
 {
     public function index()
     {
-        d('index');
         $this->res->write('test');
     }
 
@@ -29,7 +22,7 @@ class TestController extends Controller
     }
 }
 
-$module = new Module();
+$module = new Server\Module();
 
 $module->map([
     'pattern' => '*',

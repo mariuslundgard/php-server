@@ -4,14 +4,9 @@ putenv('DEBUG=1');
 
 require __DIR__.'/../vendor/autoload.php';
 
-use Server\Module;
-use Server\Layer;
-use Server\Request;
-use Server\Error;
-
-class BodyWriterMiddleware extends Layer
+class BodyWriterMiddleware extends Server\Layer
 {
-    public function call(Request $req = null, Error $err = null)
+    public function call(Server\Request $req = null, Server\Error $err = null)
     {
         $res = parent::call($req, $err);
 
@@ -21,7 +16,7 @@ class BodyWriterMiddleware extends Layer
     }
 }
 
-$stack = new Module();
+$stack = new Server\Module();
 
 $stack->employ(array(
     'pattern' => '/foo*',
