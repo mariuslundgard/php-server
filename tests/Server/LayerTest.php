@@ -56,10 +56,6 @@ class LayerTest extends Base
     {
         $layer = new Layer();
 
-        // $res = $layer->call(new Request('GET', '/test'));
-
-        // $this->assertInstanceOf('Server\Response', $res);
-
         $layer->setApp(new Layer);
     }
 
@@ -70,8 +66,6 @@ class LayerTest extends Base
         ));
 
         $req = $layer->getCurrentRequest();
-
-        // $nonexisting = $req->nonexisting;
 
         $this->assertInstanceOf('Server\Request', $req);
 
@@ -118,5 +112,36 @@ class LayerTest extends Base
             'next' => null,
             'config' => array()
         ), $layer->dump());
+    }
+
+    public function testGetCurrentUri()
+    {
+        $layer = new Layer(null, array(), array('REQUEST_URI' => '/test/foo/bar'));
+
+        $this->assertEquals('/test/foo/bar', $layer->getCurrentUri());
+    }
+
+    public function testGetCurrentUriWithBasePath()
+    {
+        $layer = new Layer(null, array('basePath' => '/test'), array('REQUEST_URI' => '/test/foo/bar'));
+
+        $this->assertEquals('/foo/bar', $layer->getCurrentUri());
+    }
+
+    /**
+     * @expectedException     Server\Error
+     */
+    public function testGetCurrentUriWithInvalidBasePath()
+    {
+        $layer = new Layer(null, array('basePath' => '/foo'), array('REQUEST_URI' => '/test/foo/bar'));
+
+        $uri = $layer->getCurrentUri();
+    }
+
+    public function testFactoryCreate()
+    {
+        $layer = Layer::create();
+
+        $this->assertInstanceOf('Server\Layer', $layer);
     }
 }
