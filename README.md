@@ -6,10 +6,14 @@ php-server
 
 [![Latest Stable Version](https://poser.pugx.org/mariuslundgard/php-server/v/stable.png)](https://packagist.org/packages/mariuslundgard/php-server)
 
-Features
+
+### Features
 
 * Routable middleware (application layers)
 * Routable controller actions
+
+
+### Examples
 
 This is the canonical *Hello World* example:
 
