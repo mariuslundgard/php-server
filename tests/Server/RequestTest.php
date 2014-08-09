@@ -36,4 +36,20 @@ class RequestTest extends Base
 
         $this->assertTrue(is_array($req->headers));
     }
+
+    public function testSetCustomProperty()
+    {
+        $req = new Request('GET', '/test');
+
+        $req->custom = 'test';
+
+        $this->assertEquals('test', $req->custom);
+    }
+
+    public function testGetQuery()
+    {
+        $req = new Request('GET', '/foo/bar?message=test');
+
+        $this->assertEquals('message=test', $req->query);
+    }
 }

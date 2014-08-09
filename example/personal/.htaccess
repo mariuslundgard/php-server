@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteBase /~mariuslundgard/php-server/example/personal/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]

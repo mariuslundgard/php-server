@@ -15,7 +15,7 @@ class RequestMatcherTest extends Base
         );
 
         $this->assertEquals(array(
-            'uri' => '/testing/1/2/3'
+            'path' => '/testing/1/2/3'
         ), RequestMatcher::matches($req, $params));
     }
 
