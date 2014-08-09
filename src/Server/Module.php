@@ -15,6 +15,18 @@ class Module extends Stack
         $this->routes = [];
     }
 
+    public function __get($property)
+    {
+        switch ($property) {
+
+            case 'routes':
+                return $this->routes;
+
+            default:
+                return parent::__get($property);
+        }
+    }
+
     public function call(Request $req = null, Error $err = null)
     {
         $this->d('Module.call('.($req ? '`'.$req->method.' '.$this->config->get('uri', $req->uri).'`' : 'NULL').')');
@@ -49,7 +61,7 @@ class Module extends Stack
     {
         $this->d('Module.getProcessedResponse('.($req ? '`'.$req->method.' '.$this->config->get('uri', $req->uri).'`' : 'NULL').')');
 
-        $topLevelApp = $this->getTopLevelApp();
+        $topLevelApp = $this->getMaster();
 
         if (static::STATE_DONE !== $topLevelApp->getState()) {
             foreach ($this->routes as $params) {

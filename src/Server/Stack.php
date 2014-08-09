@@ -22,6 +22,21 @@ class Stack extends Layer
         $this->state = static::STATE_IDLE;
     }
 
+    public function __get($property)
+    {
+        switch ($property) {
+
+            case 'state':
+                return $this->state;
+
+            case 'stack':
+                return $this->stack;
+
+            default:
+                return parent::__get($property);
+        }
+    }
+
     public function isCallable()
     {
         return null === $this->next || static::STATE_IDLE === $this->state && $this->next;

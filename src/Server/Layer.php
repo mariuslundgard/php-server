@@ -21,6 +21,30 @@ class Layer implements LayerInterface
         $this->env = new Dictionary($env);
     }
 
+    public function __get($property)
+    {
+        switch ($property) {
+
+            case 'next':
+                return $this->next;
+
+            case 'config':
+                return $this->config;
+
+            case 'env':
+                return $this->env;
+
+            case 'app':
+                return $this->app;
+
+            case 'master':
+                return $this->getMaster();
+
+            default:
+                throw new Error('Nonexisting layer property: '.$property);
+        }
+    }
+
     public function configure(array $config)
     {
         $this->config->merge($config);
@@ -80,9 +104,9 @@ class Layer implements LayerInterface
         $this->app = $app;
     }
 
-    public function getTopLevelApp()
+    public function getMaster()
     {
-        return $this->next ? $this->next->getTopLevelApp() : $this;
+        return $this->next ? $this->next->getMaster() : $this;
     }
 
     public function getNext()
