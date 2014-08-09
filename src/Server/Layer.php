@@ -66,19 +66,44 @@ class Layer implements LayerInterface
 
     public function getCurrentRequest()
     {
-        $headers = array();
+        return new Request(
+            $this->env->get('REQUEST_METHOD', 'GET'),
+            $this->getCurrentUri(),
+            $this->getCurrentData(),
+            $this->getCurrentHeaders()
+        );
+    }
+
+    public function getCurrentUri()
+    {
+        $uri = $this->env->get('REQUEST_URI', '/');
+
+        if ($basePath = $this->config['basePath']) {
+            $basePathLength = strlen($basePath);
+            if ($basePath !== substr($uri, 0, $basePathLength)) {
+                throw new Error('Invalid base path: '.$basePath);
+            }
+            $uri = substr($uri, $basePathLength);
+        }
+
+        return $uri;
+    }
+
+    public function getCurrentData()
+    {
+        return 'POST' === $this->env['REQUEST_METHOD'] ? $_POST : $_GET;
+    }
+
+    public function getCurrentHeaders()
+    {
+        $ret = array();
         foreach ($this->env->get() as $key => $value) {
             if (strpos($key, 'HTTP_') === 0) {
-                $headers[str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))))] = $value;
+                $ret[str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))))] = $value;
             }
         }
 
-        return new Request(
-            $this->env->get('REQUEST_METHOD', 'GET'),
-            $this->env->get('REQUEST_URI', '/'),
-            ('POST' === $this->env['REQUEST_METHOD'] ? $_POST : $_GET),
-            $headers
-        );
+        return $ret;
     }
 
     public function getNextResponse(Request $req = null, Error $err = null)
@@ -135,5 +160,10 @@ class Layer implements LayerInterface
             'next' => $this->next ? $this->next->dump() : null,
             'config' => $this->config->get()
         );
+    }
+
+    public static function create(LayerInterface $next = null, array $config = [], array $env = [])
+    {
+        return new static($next, $config, $env);
     }
 }
