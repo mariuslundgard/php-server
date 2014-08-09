@@ -42,11 +42,12 @@ class Info extends Server\Module
 }
 
 //////////////////////////////////////////////////////////////////////////////
-class Renderer extends Server\Module
+class Renderer extends Server\Layer
 {
     public function call(Server\Request $req = null, Server\Error $err = null)
     {
         $res = parent::call($req, $err);
+
         $res->body = $this->config['header'].$res->body.$this->config['footer'];
         // $res->body = '<pre style="border: 3px solid #00f; padding: 1em;">rendered: '.$res->body.'</pre>';
 
@@ -55,7 +56,7 @@ class Renderer extends Server\Module
 }
 
 //////////////////////////////////////////////////////////////////////////////
-class Compression extends Server\Module
+class Compression extends Server\Layer
 {
     public function call(Server\Request $req = null, Server\Error $err = null)
     {
@@ -75,8 +76,8 @@ $app = (new Server\Module())
     ->employ(array( 'class' => 'Compression' ))
     ->employ(array( 'class' => 'Renderer', 'config' => compact('header', 'footer')))
 
-    ->employ(array( 'class' => 'Blog', 'pattern' => '/blog*' ))
-    ->employ(array( 'class' => 'Info', 'pattern' => '/info*' ))
+    ->employ(array( 'class' => 'Blog', 'pattern' => '/blog*uri' ))
+    ->employ(array( 'class' => 'Info', 'pattern' => '/info*uri' ))
 
     ->map(array( 'pattern' => '/', 'fn' => function ($req, $res) { return '<h1>Front: '.$req->uri.'</h1>'; }))
     ->map(array( 'fn' => function ($req, $res) { return 'NOT FOUND: '.$req->uri; }))
