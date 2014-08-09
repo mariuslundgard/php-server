@@ -1,0 +1,1 @@
+<?php echo $view ?> WITH A WRAPPING LAYOUT VIEW

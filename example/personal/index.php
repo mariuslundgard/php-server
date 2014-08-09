@@ -16,6 +16,11 @@ class Application extends Server\Application
         parent::__construct($next, $config, $env);
 
         $this
+
+            // employ middleware:
+            ->employ(['class' => 'Server\Middleware\Renderer'])
+
+            // employ application modules:
             ->employ(['class' => 'About\Module', 'pattern' => '/about*uri'])
             ->employ(['class' => 'Blog\Module', 'pattern' => '/blog*uri'])
             ->employ(['class' => 'Cover\Module']);
