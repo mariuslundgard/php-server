@@ -34,6 +34,18 @@ class TestModule extends Module
     }
 }
 
+class UriWriterModule extends Module
+{
+    public function call(Request $req = null, Error $err = null)
+    {
+        $res = parent::call($req, $err);
+
+        $res->write($req->uri);
+
+        return $res;
+    }
+}
+
 class ModuleTest extends Base
 {
     public function testCreate()
@@ -184,5 +196,19 @@ class ModuleTest extends Base
         $app->map(array( 'fn' => function ($req, $res) { $res->write('test:'); }));
 
         $this->assertEquals('test:4:3:2:1:', $app->call()->body);
+    }
+
+    public function testNestedApp()
+    {
+        $app1 = (new Module())
+            ->employ(array( 'pattern' => '/test*', 'class' => 'Server\UriWriterModule' ));
+
+        $app2 = $app1 = (new Module())
+            ->employ(array( 'pattern' => '/test*', 'class' => 'Server\UriWriterModule' ))
+            ->employ(array( 'instance' => $app1 ));
+
+        $res = $app2->call(new Request('GET', '/test/test/test'));
+
+        // echo $res->body;
     }
 }

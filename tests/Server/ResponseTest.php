@@ -35,4 +35,25 @@ class ResponseTest extends Base
         $res = new Response(new Request('GET', '/test'));
         $res->send();
     }
+
+    public function testSetBodyProperty()
+    {
+        $res = new Response(new Request('GET', '/test'));
+
+        $res->body = 'test';
+
+        $this->assertEquals('test', $res->body);
+        // $res->send();
+    }
+
+    /**
+     * @expectedException     Server\Error
+     */
+    public function testSetNonexistentProperty()
+    {
+        $res = new Response(new Request('GET', '/test'));
+
+        $res->nonexisting = 'test';
+    }
+
 }
