@@ -62,10 +62,18 @@ class Response
     public function write($str)
     {
         $this->body .= $str;
+        return $this;
     }
 
     public function send()
     {
         echo $this->body;
+        return $this;
+    }
+
+    public function redirect($uri)
+    {
+        header('Location: '.$uri);
+        return $this;
     }
 }
