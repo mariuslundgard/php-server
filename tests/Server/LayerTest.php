@@ -13,6 +13,27 @@ class LayerTest extends Base
         $this->assertInstanceOf('Server\Layer', $layer);
     }
 
+    public function testGetters()
+    {
+        $layer = new Layer();
+
+        $this->assertEquals(null, $layer->next);
+        $this->assertInstanceOf('Util\Dictionary', $layer->config);
+        $this->assertInstanceOf('Util\Dictionary', $layer->env);
+        $this->assertEquals(null, $layer->app);
+        $this->assertInstanceOf('Server\Layer', $layer->master);
+    }
+
+    /**
+     * @expectedException     Server\Error
+     */
+    public function testNonexistentProperty()
+    {
+        $layer = new Layer();
+
+        $nonexisting = $layer->nonexisting;
+    }
+
     public function testHandleRequest()
     {
         $layer = new Layer();
