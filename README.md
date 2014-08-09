@@ -4,10 +4,16 @@ php-server
 [![Build Status](https://travis-ci.org/mariuslundgard/php-server.svg?branch=develop)](https://travis-ci.org/mariuslundgard/php-server)
 [![Coverage Status](https://coveralls.io/repos/mariuslundgard/php-server/badge.png?branch=develop)](https://coveralls.io/r/mariuslundgard/php-server?branch=develop)
 
-Features
+[![Latest Stable Version](https://poser.pugx.org/mariuslundgard/php-server/v/stable.png)](https://packagist.org/packages/mariuslundgard/php-server)
+
+
+### Features
 
 * Routable middleware (application layers)
 * Routable controller actions
+
+
+### Examples
 
 This is the canonical *Hello World* example:
 

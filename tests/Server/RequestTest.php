@@ -22,4 +22,18 @@ class RequestTest extends Base
 
         $nonexisting = $req->nonexisting;
     }
+
+    public function testGetData()
+    {
+        $req = new Request('GET', '/test');
+
+        $this->assertTrue(is_array($req->data));
+    }
+
+    public function testGetHeaders()
+    {
+        $req = new Request('GET', '/test');
+
+        $this->assertTrue(is_array($req->headers));
+    }
 }
