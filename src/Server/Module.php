@@ -17,28 +17,25 @@ class Module extends Stack
 
     public function call(Request $req = null, Error $err = null)
     {
-        if (! $req) {
-            $req = new Request();
-        }
+        $this->d('Module.call('.($req ? '`'.$req->method.' '.$req->uri.'`' : 'NULL').')');
 
-        $topLevelApp = $this->getTopLevelApp();
+        switch ($this->state) {
 
-        if (static::STATE_DONE !== $topLevelApp->getState() && (! $this->next && static::STATE_LOOP === $this->state || $this->next)) {
-            foreach ($this->routes as $params) {
-                $params += array( 'pattern' => null );
-                $matchParams = array();
-
-                if (! $params['pattern'] || is_array($matchParams = RequestMatcher::matches($req, $params))) {
-                    $topLevelApp->setState(static::STATE_DONE);
-                    $res = $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
-                    $this->callAction($req, $res, $params, $matchParams);
-
-                    return $res;
+            case static::STATE_IDLE:
+                if (! $req) {
+                    $req = $this->getCurrentRequest();
                 }
-            }
+                if ($app = $this->resolve($req)) {
+                    return $app->call($req, $err);
+                }
+
+                return $this->getProcessedResponse($req, $err);
+
+            case static::STATE_LOOP:
+                return $this->getProcessedResponse($req, $err);
         }
 
-        return $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
+        return parent::call($req, $err);
     }
 
     public function map(array $params)
@@ -48,7 +45,28 @@ class Module extends Stack
         return $this;
     }
 
-    public function callAction(Request $req, Response $res, array $params, array $matchParams)
+    public function getProcessedResponse(Request $req = null, Error $err = null)
+    {
+        $this->d('Module.getProcessedResponse('.($req ? '`'.$req->method.' '.$req->uri.'`' : 'NULL').')');
+
+        $topLevelApp = $this->getTopLevelApp();
+
+        if (static::STATE_DONE !== $topLevelApp->getState()) {
+            foreach ($this->routes as $params) {
+                $params += array( 'pattern' => null );
+                $matchParams = array();
+                if (! $params['pattern'] || is_array($matchParams = RequestMatcher::matches($req, $params))) {
+                    $topLevelApp->setState(static::STATE_DONE);
+
+                    return $this->process($req, $this->getNextResponse($req, $err), $params, $matchParams);
+                }
+            }
+        }
+
+        return $this->getNextResponse($req, $err);
+    }
+
+    public function process(Request $req, Response $res, array $params, array $matchParams)
     {
         $params += array( 'controller' => null, 'action' => 'index', 'fn' => null );
 
@@ -75,5 +93,7 @@ class Module extends Stack
         } elseif (is_string($data)) {
             $res->write($data);
         }
+
+        return $res;
     }
 }

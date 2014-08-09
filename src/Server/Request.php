@@ -8,13 +8,15 @@ class Request
 
     protected $method;
     protected $uri;
+    protected $data;
     protected $headers;
 
-    public function __construct($method = 'GET', $uri = '/')
+    public function __construct($method = 'GET', $uri = '/', array $data = [], array $headers = [])
     {
         $this->method = $method;
         $this->uri = $uri;
-        $this->headers = [];
+        $this->data = $data;
+        $this->headers = $headers;
     }
 
     public function __get($property)
@@ -26,6 +28,12 @@ class Request
 
             case 'uri':
                 return $this->uri;
+
+            case 'data':
+                return $this->data;
+
+            case 'headers':
+                return $this->headers;
 
             default:
                 throw new Error('Nonexisting request property: '.$property);

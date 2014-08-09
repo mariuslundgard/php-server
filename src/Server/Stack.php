@@ -11,19 +11,20 @@ class Stack extends Layer
     const STATE_LOOP = 1;
     const STATE_DONE = 2;
 
-    protected $env;
     protected $stack;
-    // protected $isResolved;
     protected $state;
 
     public function __construct(LayerInterface $next = null, array $config = array(), array $env = array())
     {
-        parent::__construct($next, $config);
+        parent::__construct($next, $config, $env);
 
-        $this->env = $env;
         $this->stack = new SplStack();
-        // $this->isResolved = false;
         $this->state = static::STATE_IDLE;
+    }
+
+    public function isCallable()
+    {
+        return null === $this->next || static::STATE_IDLE === $this->state && $this->next;
     }
 
     public function getState()
@@ -35,20 +36,37 @@ class Stack extends Layer
     {
         $this->state = $state;
 
+        // debug
+        $states = [ 'IDLE', 'LOOP', 'DONE' ];
+        $stateName = $states[$state];
+        $this->d('Stack.setState(`'.$stateName.'`)');
+
         return $this;
     }
 
     public function call(Request $req = null, Error $err = null)
     {
         if (! $req) {
-            $req = new Request();
+            $req = $this->getCurrentRequest();
         }
 
-        if ($app = $this->resolve($req)) {
-            return $app->call($req, $err);
-        }
+        $this->d('Stack.call(`'.$req->method.' '.$req->uri.'`)');
 
-        return $this->next ? $this->next->call($req, $err) : parent::call($req, $err);
+        switch ($this->state) {
+
+            case static::STATE_IDLE:
+                if ($app = $this->resolve($req)) {
+                    return $app->call($req, $err);
+                }
+
+                return parent::call($req, $err);
+
+            case static::STATE_LOOP:
+                return $this->next ? $this->next->call($req, $err) : new Response($req);
+
+            default:
+                return parent::call($req, $err);
+        }
     }
 
     public function employ(array $params)
@@ -60,48 +78,51 @@ class Stack extends Layer
 
     public function resolve(Request $req = null)
     {
-        if (static::STATE_IDLE !== $this->state) {
-        // if ($this->isResolved) {
-            return null;
-        }
+        switch ($this->state) {
 
-        $this->setState(static::STATE_LOOP);
-        // $this->isResolved = true;
+            case static::STATE_IDLE:
+                $next = $this;
+                $hasLayers = false;
+                foreach ($this->stack as $params) {
+                    $params += array( 'pattern' => null, 'class' => null, 'instance' => null, 'config' => array() );
+                    $match = array();
 
-        $next = $this;
-
-        foreach ($this->stack as $params) {
-            $params += array( 'pattern' => null, 'class' => null, 'instance' => null, 'config' => array() );
-            $matchParams = array();
-
-            if (! $params['pattern'] || $matchParams = RequestMatcher::matches($req, $params)) {
-
-                if ($params['class']) {
-                    if (! class_exists($params['class'])) {
-                        throw new Error('The stack frame class does not exist: '.$params['class']);
+                    if (! $params['pattern'] || is_array($match = RequestMatcher::matches($req, $params))) {
+                        $hasLayers = true;
+                        $instance = $this->resolveLayer($params, $next);
+                        $instance->configure($params['config'] + $match);
+                        $next = $instance;
                     }
-                    // TODO: use Instantiator?
-                    // $instantiator = new \Instantiator\Instantiator();
-                    // $instance = $instantiator->instantiate('My\\ClassName\\Here');
-                    $refl = new ReflectionClass($params['class']);
-                    $instance = $refl->newInstanceArgs([$next, $params['config']]);
-                } elseif ($params['instance']) {
-                    $instance = $params['instance'];
-                    $instance->setNext($next);
-                } else {
-                    throw new Error('The stack frame parameters are insuffient');
                 }
+                $this->setState(static::STATE_LOOP);
 
-                $instance->configure($matchParams + $params['config']);
-                $next = $instance;
-            }
+                return $hasLayers ? $next : null;
+
+            default:
+                return null;
         }
-
-        return $next;
     }
 
     public function count()
     {
         return $this->stack->count();
+    }
+
+    protected function resolveLayer(array $params, LayerInterface $next)
+    {
+        if ($params['class']) {
+            if (! class_exists($params['class'])) {
+                throw new Error('The stack frame class does not exist: '.$params['class']);
+            }
+            $refl = new ReflectionClass($params['class']);
+            $instance = $refl->newInstanceArgs([$next, $params['config']]);
+        } elseif ($params['instance']) {
+            $instance = $params['instance'];
+            $instance->setNext($next);
+        } else {
+            throw new Error('The stack frame parameters are insuffient');
+        }
+
+        return $instance;
     }
 }
