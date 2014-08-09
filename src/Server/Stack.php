@@ -86,8 +86,8 @@ class Stack extends Layer
                 foreach ($this->stack as $params) {
                     $params += array( 'pattern' => null, 'class' => null, 'instance' => null, 'config' => array() );
                     $match = array();
-
-                    if (! $params['pattern'] || is_array($match = RequestMatcher::matches($req, $params))) {
+                    if (! $params['pattern'] || is_array($match = RequestMatcher::matches($req, $params, $this->config['uri']))) {
+                        $this->d('MATCH PARAMS ', $match);
                         $hasLayers = true;
                         $instance = $this->resolveLayer($params, $next);
                         $instance->configure($params['config'] + $match);

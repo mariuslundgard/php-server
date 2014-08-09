@@ -40,7 +40,7 @@ class UriWriterModule extends Module
     {
         $res = parent::call($req, $err);
 
-        $res->write($req->uri);
+        $res->write($this->config->get('uri', $req->uri));
 
         return $res;
     }
@@ -200,15 +200,20 @@ class ModuleTest extends Base
 
     public function testNestedApp()
     {
-        $app1 = (new Module())
-            ->employ(array( 'pattern' => '/test*', 'class' => 'Server\UriWriterModule' ));
+        $subModule1 = new UriWriterModule();
+        $subModule2 = new UriWriterModule();
 
-        $app2 = $app1 = (new Module())
-            ->employ(array( 'pattern' => '/test*', 'class' => 'Server\UriWriterModule' ))
-            ->employ(array( 'instance' => $app1 ));
+        $app = (new Module())
+            ->employ(array( 'pattern' => '/test1*uri', 'instance' => $subModule1 ));
 
-        $res = $app2->call(new Request('GET', '/test/test/test'));
+        $subModule1
+            ->employ(array( 'pattern' => '/test2*uri', 'instance' => $subModule2 ));
 
-        // echo $res->body;
+        $subModule2
+            ->employ(array( 'pattern' => '/te*uri', 'class' => 'Server\UriWriterModule' ));
+
+        $res = $app->call(new Request('GET', '/test1/test2/test'));
+
+        $this->assertEquals('st/test/test2/test', $res->body);
     }
 }

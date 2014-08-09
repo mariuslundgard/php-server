@@ -17,7 +17,7 @@ class Module extends Stack
 
     public function call(Request $req = null, Error $err = null)
     {
-        $this->d('Module.call('.($req ? '`'.$req->method.' '.$req->uri.'`' : 'NULL').')');
+        $this->d('Module.call('.($req ? '`'.$req->method.' '.$this->config->get('uri', $req->uri).'`' : 'NULL').')');
 
         switch ($this->state) {
 
@@ -47,7 +47,7 @@ class Module extends Stack
 
     public function getProcessedResponse(Request $req = null, Error $err = null)
     {
-        $this->d('Module.getProcessedResponse('.($req ? '`'.$req->method.' '.$req->uri.'`' : 'NULL').')');
+        $this->d('Module.getProcessedResponse('.($req ? '`'.$req->method.' '.$this->config->get('uri', $req->uri).'`' : 'NULL').')');
 
         $topLevelApp = $this->getTopLevelApp();
 
