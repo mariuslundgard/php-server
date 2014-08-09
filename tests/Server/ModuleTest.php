@@ -216,4 +216,15 @@ class ModuleTest extends Base
 
         $this->assertEquals('st/test/test2/test', $res->body);
     }
+
+    public function testCallDoneModule()
+    {
+        $app = new Module();
+
+        $app->setState(Module::STATE_DONE);
+
+        $res = $app->call();
+
+        $this->assertInstanceOf('Server\Response', $res);
+    }
 }
