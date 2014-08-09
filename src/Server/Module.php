@@ -108,4 +108,12 @@ class Module extends Stack
 
         return $res;
     }
+
+    public function getRealPath($path)
+    {
+        $basePath = $this->config['basePath'] ? '/'.trim($this->config['basePath'], '/') : '';
+        $path = '/' . trim($path, '/');
+
+        return $basePath.$path;
+    }
 }

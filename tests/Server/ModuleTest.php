@@ -234,4 +234,15 @@ class ModuleTest extends Base
 
         $this->assertInstanceOf('Server\Response', $res);
     }
+
+    public function testGetRealPath()
+    {
+        $app = new Module(null, array(
+            'basePath' => '/foo',
+        ), array(
+            'REQUEST_URI' => '/foo/test'
+        ));
+
+        $this->assertEquals('/foo/bar', $app->getRealPath('bar'));
+    }
 }
