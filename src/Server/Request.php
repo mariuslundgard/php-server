@@ -7,14 +7,17 @@ class Request
     const WILDCARD_PREFIX = 'wildcard_';
 
     protected $method;
-    protected $uri;
+    protected $path;
+    protected $query;
     protected $data;
     protected $headers;
 
     public function __construct($method = 'GET', $uri = '/', array $data = [], array $headers = [])
     {
         $this->method = $method;
-        $this->uri = $uri;
+
+        $this->setUri($uri);
+
         $this->data = $data;
         $this->headers = $headers;
     }
@@ -27,7 +30,13 @@ class Request
                 return $this->method;
 
             case 'uri':
-                return $this->uri;
+                return $this->path.(strlen($this->query) ? '?'.$this->query : '');
+
+            case 'path':
+                return $this->path;
+
+            case 'query':
+                return $this->query;
 
             case 'data':
                 return $this->data;
@@ -38,5 +47,16 @@ class Request
             default:
                 throw new Error('Nonexisting request property: '.$property);
         }
+    }
+
+    public function setUri($uri)
+    {
+        $info = parse_url($uri) + array(
+            'path' => '',
+            'query' => ''
+        );
+
+        $this->path = $info['path'];
+        $this->query = $info['query'];
     }
 }
