@@ -1,5 +1,5 @@
 <?php
-    
+
 namespace Server;
 
 use Util\Dictionary;
@@ -24,15 +24,15 @@ class View
         // $buffer = ob_get_clean();
 
         extract($data + $this->data->get());
-        
+
         ob_start();
-        
+
         if ($includePath) {
             $oldIncludePath = set_include_path($includePath);
         }
 
         include $this->path;
-        
+
         if ($includePath) {
             set_include_path($oldIncludePath);
         }
@@ -40,7 +40,6 @@ class View
         $output = ob_get_clean();
 
         // echo $buffer;
-
         return $output;
     }
 

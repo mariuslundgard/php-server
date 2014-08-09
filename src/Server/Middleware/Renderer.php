@@ -15,7 +15,7 @@ class Renderer extends Layer
         if (! $this->config['viewPath']) {
             throw new Error('Missing the `viewPath` parameter');
         }
-        
+
         if (! file_exists($this->config['viewPath'])) {
             throw new Error('The view path does not exist: '.$this->config['viewPath']);
         }
