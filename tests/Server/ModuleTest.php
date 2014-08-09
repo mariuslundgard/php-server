@@ -55,6 +55,13 @@ class ModuleTest extends Base
         $this->assertInstanceOf('Server\Module', $module);
     }
 
+    public function testGetters()
+    {
+        $app = new Module();
+        $this->assertTrue(is_array($app->routes));
+        $this->assertInstanceOf('Util\Dictionary', $app->config);
+    }
+
     public function testHandleRequest()
     {
         $module = new Module();

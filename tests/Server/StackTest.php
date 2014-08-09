@@ -25,6 +25,14 @@ class StackTest extends Base
         $this->assertInstanceOf('Server\Stack', $stack);
     }
 
+    public function testGetters()
+    {
+        $app = new Stack();
+        $this->assertEquals(Stack::STATE_IDLE, $app->state);
+        $this->assertInstanceOf('SplStack', $app->stack);
+        $this->assertInstanceOf('Util\Dictionary', $app->config);
+    }
+
     public function testCallEmptyStack()
     {
         $stack = new Stack();
