@@ -23,8 +23,7 @@ class Application extends Server\Application
             // employ application modules:
             ->employ(['class' => 'About\Module', 'pattern' => '/about*uri'])
             ->employ(['class' => 'Blog\Module', 'pattern' => '/blog*uri'])
-            ->employ(['class' => 'Cover\Module'])
-;
+            ->employ(['class' => 'Cover\Module']);
     }
 
     public function getMenuHtml()
