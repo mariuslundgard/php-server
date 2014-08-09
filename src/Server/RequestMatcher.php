@@ -6,7 +6,7 @@ class RequestMatcher
 {
     const WILDCARD_PREFIX = 'wildcard_';
 
-    public static function matches(Request $req, array $params, $overrideUri = null)
+    public static function matches(Request $req, array $params, $overridePath = null)
     {
         $params += array(
             'method' => '*',
@@ -18,11 +18,11 @@ class RequestMatcher
             return false;
         }
 
-        $uri = $overrideUri ? $overrideUri : $req->uri;
+        $path = $overridePath ? $overridePath : $req->path;
 
         // test `pattern`
         if ('*' === $params['pattern']) {
-            return compact('uri');
+            return compact('path');
         }
 
         $pattern = static::compileUriPattern($params['pattern']);
@@ -30,9 +30,9 @@ class RequestMatcher
         // Note: only to avoid PHP CS error
         $matches = array();
 
-        if (preg_match_all($pattern, $uri, $matches)) {
+        if (preg_match_all($pattern, $path, $matches)) {
 
-            // return named uri parameters
+            // return named parameters
             $ret = [];
             foreach ($matches as $key => $val) {
                 if (! is_numeric($key)) {
