@@ -20,11 +20,13 @@ class Renderer extends Layer
             throw new Error('The view path does not exist: '.$this->config['viewPath']);
         }
 
-        return $this->render(parent::call($req, $err));
+        return $this->render($req, parent::call($req, $err));
     }
 
-    public function render(Response $res)
+    public function render(Request $req, Response $res)
     {
+        $res->data->set(array('app' => $this->master) + compact('req', 'res'));
+
         $view = $res->data->get('view', $this->config['defaultView']);
         $layout = $res->data->get('layout', $this->config['defaultLayout']);
 
