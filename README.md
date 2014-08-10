@@ -1,8 +1,8 @@
 php-server
 ==========
 
-[![Build Status](https://travis-ci.org/mariuslundgard/php-server.svg?branch=develop)](https://travis-ci.org/mariuslundgard/php-server)
-[![Coverage Status](https://coveralls.io/repos/mariuslundgard/php-server/badge.png?branch=develop)](https://coveralls.io/r/mariuslundgard/php-server?branch=develop)
+[![Build Status](https://travis-ci.org/mariuslundgard/php-server.svg)](https://travis-ci.org/mariuslundgard/php-server)
+[![Coverage Status](https://coveralls.io/repos/mariuslundgard/php-server/badge.png)](https://coveralls.io/r/mariuslundgard/php-server)
 
 [![Latest Stable Version](https://poser.pugx.org/mariuslundgard/php-server/v/stable.png)](https://packagist.org/packages/mariuslundgard/php-server)
 
