@@ -34,13 +34,13 @@ class TestModule extends Module
     }
 }
 
-class UriWriterModule extends Module
+class PathWriterModule extends Module
 {
     public function call(Request $req = null, Error $err = null)
     {
         $res = parent::call($req, $err);
 
-        $res->write($this->config->get('uri', $req->uri));
+        $res->write($this->config->get('path', $req->uri));
 
         return $res;
     }
@@ -207,17 +207,17 @@ class ModuleTest extends Base
 
     public function testNestedApp()
     {
-        $subModule1 = new UriWriterModule();
-        $subModule2 = new UriWriterModule();
+        $subModule1 = new PathWriterModule();
+        $subModule2 = new PathWriterModule();
 
         $app = (new Module())
-            ->employ(array( 'pattern' => '/test1*uri', 'instance' => $subModule1 ));
+            ->employ(array( 'pattern' => '/test1*path', 'instance' => $subModule1 ));
 
         $subModule1
-            ->employ(array( 'pattern' => '/test2*uri', 'instance' => $subModule2 ));
+            ->employ(array( 'pattern' => '/test2*path', 'instance' => $subModule2 ));
 
         $subModule2
-            ->employ(array( 'pattern' => '/te*uri', 'class' => 'Server\UriWriterModule' ));
+            ->employ(array( 'pattern' => '/te*path', 'class' => 'Server\PathWriterModule' ));
 
         $res = $app->call(new Request('GET', '/test1/test2/test'));
 
