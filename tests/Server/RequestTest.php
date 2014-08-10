@@ -52,4 +52,17 @@ class RequestTest extends Base
 
         $this->assertEquals('message=test', $req->query);
     }
+
+    public function testIsAjax()
+    {
+        $req = new Request('GET', '/foo/bar');
+
+        $this->assertFalse($req->isAjax());
+
+        $ajaxReq = new Request('GET', '/foo/bar', array(), array(
+            'X-Requested-With' => 'xmlhttprequest'
+        ));
+
+        $this->assertTrue($ajaxReq->isAjax());
+    }
 }
