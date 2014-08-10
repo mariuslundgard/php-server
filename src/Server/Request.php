@@ -15,9 +15,7 @@ class Request
     public function __construct($method = 'GET', $uri = '/', array $data = [], array $headers = [])
     {
         $this->method = $method;
-
         $this->setUri($uri);
-
         $this->data = $data;
         $this->headers = $headers;
     }
@@ -58,5 +56,11 @@ class Request
 
         $this->path = $info['path'];
         $this->query = $info['query'];
+    }
+
+    public function isAjax()
+    {
+        return (null !== $this->headers['X-Requested-With'])
+            && ('xmlhttprequest' === strtolower($this->headers['X-Requested-With']));
     }
 }
