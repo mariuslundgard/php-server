@@ -60,7 +60,8 @@ class Request
 
     public function isAjax()
     {
-        return (null !== $this->headers['X-Requested-With'])
+        print_r($this->headers);
+        return (isset($this->headers['X-Requested-With']))
             && ('xmlhttprequest' === strtolower($this->headers['X-Requested-With']));
     }
 }
