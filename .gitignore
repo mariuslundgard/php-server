@@ -1,6 +1,10 @@
 # PHP prj
 /cache.properties
 
+# vagrant
+/.vagrant
+/env/vhosts.txt
+
 # composer
 /vendor/
 /composer.lock
