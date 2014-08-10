@@ -29,7 +29,7 @@ class Module extends Stack
 
     public function call(Request $req = null, Error $err = null)
     {
-        $this->d('Module.call('.($req ? '`'.$req->method.' '.$this->config->get('path', $req->uri).'`' : 'NULL').')');
+        // $this->d('Module.call('.($req ? '`'.$req->method.' '.$this->config->get('path', $req->uri).'`' : 'NULL').')');
 
         switch ($this->state) {
 
@@ -59,7 +59,7 @@ class Module extends Stack
 
     public function getProcessedResponse(Request $req = null, Error $err = null)
     {
-        $this->d('Module.getProcessedResponse('.($req ? '`'.$req->method.' '.$this->config->get('path', $req->uri).'`' : 'NULL').')');
+        // $this->d('Module.getProcessedResponse('.($req ? '`'.$req->method.' '.$this->config->get('path', $req->uri).'`' : 'NULL').')');
 
         $topLevelApp = $this->getMaster();
 
@@ -68,8 +68,7 @@ class Module extends Stack
                 $params += array( 'pattern' => null );
                 $matchParams = array();
                 if (! $params['pattern'] || is_array($matchParams = RequestMatcher::matches($req, $params, $this->config['path']))) {
-                    $this->d('MATCHING ROUTE ', $matchParams);
-
+                    // $this->d('MATCHING ROUTE ', $matchParams);
                     $topLevelApp->setState(static::STATE_DONE);
 
                     return $this->process($req, $this->getNextResponse($req, $err), $params, $matchParams);

@@ -20,6 +20,11 @@ class Layer extends Base
 
         $res->data['menu'] = new View($this->master, $this->config->get('items', array()));
 
+        $res->data['menu']->addMenuItem([
+            'uri' => '/',
+            'label' => time()
+        ]);
+
         return $res;
     }
 }

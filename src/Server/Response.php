@@ -208,7 +208,7 @@ class Response
                 header($this->getStatusHeader());
 
                 if (304 === $this->status) {
-                    return;
+                    exit;
                 }
             }
 

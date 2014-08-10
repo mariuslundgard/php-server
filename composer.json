@@ -14,7 +14,8 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.13",
-        "mariuslundgard/php-debug": "dev-develop"
+        "mariuslundgard/php-debug": "dev-develop",
+        "tobie/ua-parser": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",

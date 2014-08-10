@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Server framework package for PHP.
+ *
+ * (c) Marius Lundgård <marius.lundgard@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Server\Middleware;
 
 use Server\Layer;
@@ -51,4 +60,11 @@ class Renderer extends Layer
 
         return $res;
     }
+
+    // public function getPreferredType()
+    // {
+    //     $ret = array_keys($this->headers->get('Accept', [null => true]));
+
+    //     return $ret[0];
+    // }
 }

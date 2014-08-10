@@ -65,7 +65,7 @@ class Stack extends Layer
             $req = $this->getCurrentRequest();
         }
 
-        $this->d('Stack.call(`'.$req->method.' '.$req->uri.'`)');
+        // $this->d('Stack.call(`'.$req->method.' '.$req->uri.'`)');
 
         switch ($this->state) {
 
@@ -102,7 +102,7 @@ class Stack extends Layer
                     $params += array( 'pattern' => null, 'class' => null, 'instance' => null, 'config' => array() );
                     $match = array();
                     if (! $params['pattern'] || is_array($match = RequestMatcher::matches($req, $params, $this->config['path']))) {
-                        $this->d('MATCH PARAMS ', $match);
+                        // $this->d('MATCH PARAMS ', $match);
                         $hasLayers = true;
                         $instance = $this->resolveLayer($params, $next, $match);
                         $next = $instance;
