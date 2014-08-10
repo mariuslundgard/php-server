@@ -75,4 +75,18 @@ class Request
         return (isset($this->headers['X-Requested-With']))
             && ('xmlhttprequest' === strtolower($this->headers['X-Requested-With']));
     }
+
+    public function dump()
+    {
+        return [
+            'scheme' => $this->scheme,
+            'version' => $this->version,
+            'method' => $this->method,
+            'uri' => $this->uri,
+            'path' => $this->path,
+            'query' => $this->query,
+            'data' => $this->data->get(),
+            'headers' => $this->headers->get()
+        ];
+    }
 }
