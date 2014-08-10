@@ -105,7 +105,6 @@ class Stack extends Layer
                         $this->d('MATCH PARAMS ', $match);
                         $hasLayers = true;
                         $instance = $this->resolveLayer($params, $next);
-                        $instance->configure($params['config'] + $match);
                         $next = $instance;
                     }
                 }
@@ -133,6 +132,7 @@ class Stack extends Layer
             $instance = $refl->newInstanceArgs([$next, $params['config']]);
         } elseif ($params['instance']) {
             $instance = $params['instance'];
+            $instance->configure($params['config'] + $match);
             $instance->setNext($next);
         } else {
             throw new Error('The stack frame parameters are insuffient');
