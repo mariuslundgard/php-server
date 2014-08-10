@@ -3,7 +3,7 @@
 /*
  * This file is part of the Server framework package for PHP.
  *
- * (c) Marius Lundgård <marius.lundgard@gmail.com>
+ * (c) Marius Lundgård <studio@mariuslundgard.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,11 +16,12 @@ use Server\LayerInterface;
 use Server\Request;
 use Server\Response;
 use Server\Error;
+use Exception;
 
 /**
  * The error handler.
  *
- * @author  Marius Lundgård <marius.lundgard@gmail.com>
+ * @author  Marius Lundgård <studio@mariuslundgard.com>
  */
 class ErrorHandler extends Layer
 {
@@ -72,9 +73,6 @@ class ErrorHandler extends Layer
                 'view'   => $this->config['view'],
                 'title'  => $err->getMessage(),
             ]);
-
-            d($res->view);
-            exit;
         }
 
         return $res;

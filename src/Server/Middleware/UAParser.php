@@ -3,7 +3,7 @@
 /*
  * This file is part of the Server framework package for PHP.
  *
- * (c) Marius Lundgård <marius.lundgard@gmail.com>
+ * (c) Marius Lundgård <studio@mariuslundgard.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,7 +19,7 @@ use UAParser\Parser;
 /**
  * The user agent parsing middleware.
  *
- * @author Marius Lundgård <marius.lundgard@gmail.com>
+ * @author Marius Lundgård <studio@mariuslundgard.com>
  */
 class UAParser extends Layer
 {
