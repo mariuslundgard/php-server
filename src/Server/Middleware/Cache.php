@@ -119,7 +119,7 @@ class Cache extends Layer
         //     : $this->config['defaultTimeout'];
 
         // ;
-        return $res = $this->getCachedResponse($req)
+        return ($res = $this->getCachedResponse($req))
             ? $res
             : parent::call($req);
     }
