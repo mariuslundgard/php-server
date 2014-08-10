@@ -110,8 +110,6 @@ class Cache extends Layer
             return parent::call($req, $err);
         }
 
-        $res = null;
-
         // var_dump($req->headers->get('Cache-Control'));
         // exit;
 
@@ -119,6 +117,16 @@ class Cache extends Layer
         // $maxAge = isset($req->headers['Cache-Control']['max-age'])
         //     ? $req->headers['Cache-Control']['max-age']
         //     : $this->config['defaultTimeout'];
+
+        // ;
+        return $res = $this->getCachedResponse($req)
+            ? $res
+            : parent::call($req);
+    }
+
+    public function getCachedResponse(Request $req)
+    {
+        $res = null;
 
         if ($this->requestIsCacheable($req)) {
 
@@ -204,7 +212,7 @@ class Cache extends Layer
         */
         }
 
-        return $res ? $res : parent::call($req, $err);
+        return $res;
     }
 
     public function setLastModifiedHeaderFromTimestamp(Response $res, $timestamp)
@@ -221,9 +229,16 @@ class Cache extends Layer
     {
         $id = str_insert($this->config['pattern'], $req->dump() + array(
             'host' => $this->master->env['HTTP_HOST'],
+            'locale' => property_exists($req, 'locale') ? $req->locale : '',
         ));
 
-        return $this->config['keyPrefix'].md5($id);
+        // return $this->config['keyPrefix'].md5($id);
+        return $this->config['keyPrefix'].
+            preg_replace(
+                '/\-+/',
+                '-',
+                strtolower(str_replace('.', '-', str_replace(':', '-', str_replace('/', '-', $id))))
+            );
     }
 
     public function getCachePath(Request $req)

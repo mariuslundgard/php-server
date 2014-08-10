@@ -97,8 +97,6 @@ class Session extends Layer implements ArrayAccess
 
     public function get($key = null, $default = null)
     {
-        // $this->start();
-
         $id = $this->config['id'];
 
         if (null === $key) {
@@ -109,7 +107,9 @@ class Session extends Layer implements ArrayAccess
             return $this->flashData[$key];
         }
 
-        $value = delim_get($id ? $_SESSION[$id] : $_SESSION, $key, $this->config['delim']);
+        $subject = $id ? $_SESSION[$id] : $_SESSION;
+
+        $value = delim_get($subject, $key, $this->config['delim']);
 
         return $value ? $value : $default;
     }

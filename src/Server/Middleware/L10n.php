@@ -21,9 +21,10 @@ use Server\Error;
  *
  * Takes configuration:
  * `domainPath`     -> The path to the locale files (the .po and .mo files)
+ * `forceLocale`    -> If this is present, the locale will always be that.
  * `defaultLocale`  -> The fallback locale, when the locale is not supported
  * `defaultCharset` -> The default character set
- * `forceLocale`    -> If this is present, the locale will always be that.
+ * `defaultDomain`  -> The default domain name
  */
 class L10n extends Layer
 {
@@ -34,6 +35,7 @@ class L10n extends Layer
             'forceLocale' => null,
             'defaultLocale' => 'en_US',
             'defaultCharset' => 'UTF-8',
+            'defaultDomain' => 'messages',
         ], $env);
     }
 
@@ -66,32 +68,37 @@ class L10n extends Layer
         // format for PHP
         $locale = str_replace('-', '_', $locale);
 
-        // nn_NN formats
+        // ln_LN formatting
         if (5 === strlen($locale)) {
-            $locale = substr($locale, 0, 3) . strtoupper(substr($locale, 3));
+            $locale = substr($locale, 0, 3).strtoupper(substr($locale, 3));
         }
 
-        // get charset
+        if ('nb' === $locale) {
+            $locale = 'nb_NO';
+        }
+
         $charset = $this->config->get('defaultCharset');
 
-        // prepare locate string
-        $locale = $locale.'.'.str_replace('-', '', strtolower($charset));
+        $locale = $locale.'.'.$charset;
 
-        // store locale
         $req->locale = $locale;
 
         // set text domain, codeset
         if ($domainPath = $this->config['domainPath']) {
 
+            // get domain name
+            $domain = $this->config->get('defaultDomain', 'messages');
+
             // set locale
             putenv('LANG=' . $locale);
-            setlocale(LC_MESSAGES, $locale);
 
-            //
-            bindtextdomain('messages', $domainPath);
-            textdomain('messages');
-            bind_textdomain_codeset('messages', $charset);
+            if ($locale !== setlocale(LC_MESSAGES, $locale)) {
+                $this->d('Note: the locale is not supported by the system: '.$locale);
+            }
 
+            bindtextdomain($domain, $domainPath);
+            textdomain($domain);
+            bind_textdomain_codeset($domain, $charset);
         } else {
             throw new Error('Missing the `domainPath` parameter');
         }
@@ -99,10 +106,10 @@ class L10n extends Layer
         return parent::call($req, $err);
     }
 
-    public function acceptsLocale(Request $req, $lang)
-    {
-        return isset($this->headers['Accept-Language'][$language]);
-    }
+    // public function acceptsLocale(Request $req, $lang)
+    // {
+    //     return isset($req->headers['Accept-Language'][$lang]);
+    // }
 
     public function getPreferredLocale(Request $req)
     {
