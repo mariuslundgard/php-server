@@ -1,0 +1,125 @@
+
+####################################
+### Virtual Machine
+####################################
+vagrant:
+  box: precise32
+  box_url: http://files.vagrantup.com/precise32.box
+  box_port: 8084
+  box_port_ssl: 6383
+  box_ip: 192.168.33.29
+  ssh_shell: bash -c 'BASH_ENV=/etc/profile exec bash'
+  ssh_username: vagrant
+  vm_name: php-server-lamp
+  vm_memory: 256
+  vm_cpu: 80
+  vm_webroot: .
+  vm_docroot: /var/www
+  vm_hostname: localhost
+
+####################################
+### Ubuntu Linux
+####################################
+syspackages:
+  - build-essential
+  - openssl
+  - unzip
+  - git
+  - curl
+  - php5-dev
+  - php-pear
+  - libyaml-dev
+
+####################################
+### Apache Modules
+####################################
+apachemodules:
+  - autoindex
+  - deflate
+  - expires
+  - filter
+  - headers
+  - include
+  - mime
+  - rewrite
+  - setenvif
+  - ssl
+
+####################################
+### PHP Modules
+####################################
+phpmodules:
+  - php5-cli
+  - php5-sqlite
+  - php5-imagick
+  - php5-mcrypt
+  - php5-imap
+  - php5-curl
+  - php5-gd
+  - php5-xmlrpc
+  - php5-xdebug
+  - libapache2-mod-php5
+
+####################################
+### SSL Certificate
+####################################
+ssl:
+  country: US
+  state: Pennsylvania
+  city: Pittsburgh
+  company: Fake Company
+  section: Information Technology
+  domain: 127.0.0.1
+  email: fake@example.com
+
+####################################
+### Debugging
+####################################
+errors:
+  - display_errors = On
+  - error_reporting = E_ALL
+  - display_startup_errors = On
+  - log_errors = On
+  - log_errors_max_len = 1024
+  - ignore_repeated_errors = Off
+  - ignore_repeated_source = Off
+  - report_memleaks = On
+  - html_errors = On
+  - docref_root = "http://www.php.net/manual/en/"
+  - docref_ext = .php
+  - error_log = /vagrant/log/php_errors.log
+  - error_prepend_string = "<span style='color:red'>"
+  - error_append_string = "</span>"
+xdebug:
+  - zend_extension=/usr/lib/php5/20121212/xdebug.so
+  - xdebug.remote_enable = 1
+  - xdebug.remote_host = localhost
+  - xdebug.remote_port = 9000
+  - xdebug.remote_connect_back = 1
+  - xdebug.remote_handler = dbgp
+  - xdebug.remote_mode = req
+  - xdebug.remote_log = /vagrant/log/php5-xdebug.log
+  - xdebug.profiler_enable = 0
+  - xdebug.profiler_output_dir = /tmp
+  - xdebug.profiler_output_name = cachegrind.out.%t.%p
+
+####################################
+### Directory Rules
+####################################
+directory:
+  - Options Indexes FollowSymLinks MultiViews
+  - AllowOverride All
+  - Order allow,deny
+  - Allow from all
+
+####################################
+### Virtual Hosts
+####################################
+vhosts:
+  -
+    ServerName: php-server.local
+    ServerAlias: www.php-server.local php-server.dev www.php-server.dev
+    DocumentRoot: /var/www
+    ServerAdmin: webmaster@php-server
+    SetEnv:
+      - 'APP_ENV dev'
