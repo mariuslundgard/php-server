@@ -180,9 +180,9 @@ class Response
 
     public function redirect($location)
     {
-        $this->headers['Location'] = $this->req->uri($location);
+        $this->headers['Location'] = $location;
         $this->send();
-        exit;
+        // exit;
     }
 
     /**
