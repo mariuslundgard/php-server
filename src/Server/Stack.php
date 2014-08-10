@@ -104,7 +104,7 @@ class Stack extends Layer
                     if (! $params['pattern'] || is_array($match = RequestMatcher::matches($req, $params, $this->config['uri']))) {
                         $this->d('MATCH PARAMS ', $match);
                         $hasLayers = true;
-                        $instance = $this->resolveLayer($params, $next);
+                        $instance = $this->resolveLayer($params, $next, $match);
                         $next = $instance;
                     }
                 }
@@ -122,17 +122,17 @@ class Stack extends Layer
         return $this->stack->count();
     }
 
-    protected function resolveLayer(array $params, LayerInterface $next)
+    protected function resolveLayer(array $params, LayerInterface $next, array $matchParams)
     {
         if ($params['class']) {
             if (! class_exists($params['class'])) {
                 throw new Error('The stack frame class does not exist: '.$params['class']);
             }
             $refl = new ReflectionClass($params['class']);
-            $instance = $refl->newInstanceArgs([$next, $params['config']]);
+            $instance = $refl->newInstanceArgs([$next, $params['config'] + $matchParams]);
         } elseif ($params['instance']) {
             $instance = $params['instance'];
-            $instance->configure($params['config'] + $match);
+            $instance->configure($params['config'] + $matchParams);
             $instance->setNext($next);
         } else {
             throw new Error('The stack frame parameters are insuffient');
