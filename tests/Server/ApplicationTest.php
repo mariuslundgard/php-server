@@ -24,5 +24,7 @@ class ApplicationTest extends Base
         $app2 = Application::create();
 
         $this->assertEquals('/test.css', $app2->staticUrl('test.css'));
+
+        $this->assertEquals('http://localhost/test.css', $app->staticUrl('http://localhost/test.css'));
     }
 }
