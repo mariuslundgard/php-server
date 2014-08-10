@@ -2,6 +2,8 @@
 
 namespace Server;
 
+use Util\Dictionary;
+
 class Request
 {
     const WILDCARD_PREFIX = 'wildcard_';
@@ -14,15 +16,23 @@ class Request
 
     public function __construct($method = 'GET', $uri = '/', array $data = [], array $headers = [])
     {
+        $this->scheme = 'HTTP';
+        $this->version = '1.1';
         $this->method = $method;
         $this->setUri($uri);
-        $this->data = $data;
-        $this->headers = $headers;
+        $this->data = new Dictionary($data);
+        $this->headers = new Dictionary($headers);
     }
 
     public function __get($property)
     {
         switch ($property) {
+
+            case 'scheme':
+                return $this->scheme;
+
+            case 'version':
+                return $this->version;
 
             case 'method':
                 return $this->method;
