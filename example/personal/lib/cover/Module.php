@@ -14,22 +14,36 @@ class Module extends Base
         $this->map(array(
             'pattern' => '/',
             'fn' => function ($req, $res) {
-                $pageTitle = 'Welcome to '.$this->master->config['title'].'!';
-                $res->write($this->master->getHeader(/*$pageTitle*/));
-                $res->write($this->master->getMenuHtml());
-                $res->write('<div class="article"><div class="article-header"><h1>'.$pageTitle.'</h1></div></div>');
-                $res->write($this->master->getFooter());
+                return array(
+                    'view' => 'cover/index',
+                    'styleSheets' => [
+                        'http://localhost/~mariuslundgard/body/dist/body.css'
+                    ],
+                    'scripts' => [
+                        'http://localhost/~mariuslundgard/body/dist/body.js'
+                    ],
+                    'bodyClassNames' => [
+                        'no-margin'
+                    ]
+                );
             }
         ));
 
         $this->map(array(
             'pattern' => '*',
             'fn' => function ($req, $res) {
-                $pageTitle = '404 — Not Found';
-                $res->write($this->master->getHeader($pageTitle));
-                $res->write($this->master->getMenuHtml());
-                $res->write('<div class="article"><div class="article-header"><h1>'.$pageTitle.'</h1></div></div>');
-                $res->write($this->master->getFooter());
+                return array(
+                    'view' => '404',
+                    'styleSheets' => [
+                        'http://localhost/~mariuslundgard/body/dist/body.css'
+                    ],
+                    'scripts' => [
+                        'http://localhost/~mariuslundgard/body/dist/body.js'
+                    ],
+                    'bodyClassNames' => [
+                        'no-margin'
+                    ]
+                );
             }
         ));
     }

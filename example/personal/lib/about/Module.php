@@ -14,10 +14,18 @@ class Module extends Base
         $this->map(array(
             'pattern' => '*',
             'fn' => function ($req, $res) {
-                $res->write($this->master->getHeader());
-                $res->write($this->master->getMenuHtml());
-                $res->write('<div class="article"><div class="article-header"><h1>About</h1></div>');
-                $res->write($this->master->getFooter());
+                return array(
+                    'view' => 'about/index',
+                    'styleSheets' => [
+                        'http://localhost/~mariuslundgard/body/dist/body.css'
+                    ],
+                    'scripts' => [
+                        'http://localhost/~mariuslundgard/body/dist/body.js'
+                    ],
+                    'bodyClassNames' => [
+                        'no-margin'
+                    ]
+                );
             }
         ));
     }
