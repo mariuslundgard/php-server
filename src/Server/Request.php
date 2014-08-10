@@ -8,6 +8,8 @@ class Request
 {
     const WILDCARD_PREFIX = 'wildcard_';
 
+    protected $scheme;
+    protected $version;
     protected $method;
     protected $path;
     protected $query;
