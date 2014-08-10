@@ -65,4 +65,18 @@ class RequestTest extends Base
 
         $this->assertTrue($ajaxReq->isAjax());
     }
+
+    public function testGetScheme()
+    {
+        $req = new Request('GET', '/foo/bar');
+
+        $this->assertEquals('HTTP', $req->scheme);
+    }
+
+    public function testGetVersion()
+    {
+        $req = new Request('GET', '/foo/bar');
+
+        $this->assertEquals('1.1', $req->version);
+    }
 }
