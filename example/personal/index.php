@@ -1,12 +1,13 @@
 <?php
 
-putenv('DEBUG=1');
+// putenv('DEBUG=1');
 
 define('APP_PATH', __DIR__);
 
 require APP_PATH.'/../../vendor/autoload.php';
 require APP_PATH.'/lib/cover/Module.php';
 require APP_PATH.'/lib/blog/Module.php';
+require APP_PATH.'/lib/blog/Controller.php';
 require APP_PATH.'/lib/about/Module.php';
 require APP_PATH.'/lib/menu/Layer.php';
 require APP_PATH.'/lib/menu/View.php';

@@ -14,38 +14,13 @@ class Module extends Base
 
         $this->map(array(
             'pattern' => '/',
-            'fn' => function ($req, $res) {
-                return array(
-                    'view' => 'blog/index',
-                    'styleSheets' => [
-                        'http://localhost/~mariuslundgard/body/dist/body.css'
-                    ],
-                    'scripts' => [
-                        'http://localhost/~mariuslundgard/body/dist/body.js'
-                    ],
-                    'bodyClassNames' => [
-                        'no-margin'
-                    ]
-                );
-            }
+            'controller' => 'Blog\Controller'
         ));
 
         $this->map(array(
             'pattern' => '*',
-            'fn' => function ($req, $res) {
-                return array(
-                    'view' => 'blog/read',
-                    'styleSheets' => [
-                        'http://localhost/~mariuslundgard/body/dist/body.css'
-                    ],
-                    'scripts' => [
-                        'http://localhost/~mariuslundgard/body/dist/body.js'
-                    ],
-                    'bodyClassNames' => [
-                        'no-margin'
-                    ]
-                );
-            }
+            'controller' => 'Blog\Controller',
+            'action' => 'read'
         ));
     }
 }
