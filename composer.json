@@ -5,7 +5,7 @@
     "authors": [
         {
             "name": "Marius Lundgård",
-            "email": "marius.lundgard@gmail.com"
+            "email": "studio@mariuslundgard.com"
         }
     ],
     "autoload": {
@@ -14,10 +14,6 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.13",
-        "mariuslundgard/php-util": "dev-develop",
-        "mariuslundgard/php-core": "dev-develop",
-        "mariuslundgard/php-event": "dev-develop",
-        "mariuslundgard/php-socket": "dev-develop",
         "mariuslundgard/php-debug": "dev-develop"
     },
     "require-dev": {
@@ -36,26 +32,6 @@
         "satooshi/php-coveralls": "dev-master"
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/mariuslundgard/php-util"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/mariuslundgard/php-core"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/mariuslundgard/php-event"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/mariuslundgard/php-socket"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/mariuslundgard/php-debug"
-        },
         {
             "type": "package",
             "package": {
