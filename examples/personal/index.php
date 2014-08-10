@@ -21,14 +21,34 @@ class Application extends Server\Application
         $this
 
             // employ middleware:
+            ->employ(['class' => 'Server\Middleware\Accept'])
+            ->employ([
+                'class' => 'Server\Middleware\L10n',
+                'config' => [
+                    'domainPath' => APP_PATH.'/locale'
+                ]
+            ])
+            ->employ(['class' => 'Server\Middleware\Encoding'])
+            ->employ(['class' => 'Server\Middleware\Session'])
+            ->employ(['class' => 'Server\Middleware\Cookie'])
+            ->employ(['class' => 'Server\Middleware\UAParser'])
+            ->employ(['class' => 'Server\Middleware\Safari304Workaround'])
+            ->employ([
+                'class' => 'Server\Middleware\Cache',
+                'config' => [
+                    'dirPath' => APP_PATH.'/cache',
+                    'pattern' => '{:scheme}://{:host}{:uri}/{:locale}'
+                ],
+            ])
             ->employ([
                 'class' => 'Server\Middleware\Renderer',
                 'config' => [
-                    'layoutPath' => __DIR__.'/lib',
-                    'viewPath' => __DIR__.'/lib',
+                    'layoutPath' => APP_PATH.'/lib',
+                    'viewPath' => APP_PATH.'/lib',
                     'defaultLayout' => 'layout'
                 ]
             ])
+            ->employ(['class' => 'Server\Middleware\ErrorHandler'])
 
             // employ application modules:
             ->employ(['class' => 'About\Module', 'pattern' => '/about*path'])
@@ -40,8 +60,8 @@ class Application extends Server\Application
                 'config' => array(
                     'items' => array(
                         array('uri' => '/', 'label' => $this->config['title']),
-                        array('uri' => '/blog', 'label' => 'Blog'),
-                        array('uri' => '/about', 'label' => 'About')
+                        array('uri' => '/blog', 'label' => _('Blog')),
+                        array('uri' => '/about', 'label' => _('About'))
                     )
                 )
             ]);
@@ -49,6 +69,6 @@ class Application extends Server\Application
 }
 
 Application::create(null, [
-    'title' => 'A Personal Site',
-    'basePath' => '/~mariuslundgard/php-server/example/personal'
+    'title' => _('A Personal Site'),
+    'basePath' => '/examples/personal'
 ], $_SERVER)->call()->send();

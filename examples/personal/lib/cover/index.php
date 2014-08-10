@@ -4,7 +4,11 @@
     </header>
 
     <div class="article-content">
-        <p>Content here...</p>
+        <p><?php echo _('Content here...') ?></p>
     </div>
+
+    <!-- <?php var_dump($req->headers['Accept']) ?> -->
+    <!-- <?php var_dump($req->headers['Accept-Encoding']) ?> -->
+    <!-- <?php var_dump($req->headers['Accept-Language']) ?> -->
 </div>
 

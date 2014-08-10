@@ -1,10 +1,10 @@
 <div class="article">
     <header class="article-header">
-        <h1 class="article-title">Article Title: <?php echo $path ?></h1>
+        <h1 class="article-title"><?php echo sprintf(_('Article Title: %s'), $path) ?></h1>
     </header>
 
     <div class="article-content">
-        <p>Article content here...</p>
+        <p><?php echo _('Article content here...') ?></p>
     </div>
 </div>
 
