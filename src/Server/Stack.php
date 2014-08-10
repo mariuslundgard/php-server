@@ -101,7 +101,7 @@ class Stack extends Layer
                 foreach ($this->stack as $params) {
                     $params += array( 'pattern' => null, 'class' => null, 'instance' => null, 'config' => array() );
                     $match = array();
-                    if (! $params['pattern'] || is_array($match = RequestMatcher::matches($req, $params, $this->config['uri']))) {
+                    if (! $params['pattern'] || is_array($match = RequestMatcher::matches($req, $params, $this->config['path']))) {
                         $this->d('MATCH PARAMS ', $match);
                         $hasLayers = true;
                         $instance = $this->resolveLayer($params, $next, $match);
@@ -124,6 +124,10 @@ class Stack extends Layer
 
     protected function resolveLayer(array $params, LayerInterface $next, array $matchParams)
     {
+        if (isset($matchParams['path']) && '' === $matchParams['path']) {
+            $matchParams['path'] = '/';
+        }
+
         if ($params['class']) {
             if (! class_exists($params['class'])) {
                 throw new Error('The stack frame class does not exist: '.$params['class']);
