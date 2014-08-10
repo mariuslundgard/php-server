@@ -18,7 +18,7 @@ class ResponseTest extends Base
         $res = new Response(new Request('GET', '/test'));
 
         // $this->assertInstanceOf('Server\Response', $res);
-        $this->assertTrue(is_array($res->headers));
+        $this->assertTrue(is_array($res->headers->get()));
         $this->assertInstanceOf('Util\Dictionary', $res->data);
         $this->assertEquals('text/html', $res->type);
     }
@@ -55,7 +55,9 @@ class ResponseTest extends Base
     public function testSend()
     {
         $res = new Response(new Request('GET', '/test'));
-        $res->send();
+        $output = $res->send('', false);
+
+        $this->assertEquals('', $output);
     }
 
     public function testSetBodyProperty()
@@ -78,4 +80,48 @@ class ResponseTest extends Base
         $res->nonexisting = 'test';
     }
 
+    public function testGetLength()
+    {
+        $res = new Response(new Request('GET', '/'));
+
+        $this->assertEquals(0, $res->length);
+
+        $res->write('foo');
+
+        $this->assertEquals(3, $res->length);
+    }
+
+    public function testStatus()
+    {
+        $res = new Response(new Request('GET', '/'));
+
+        $this->assertEquals(200, $res->status);
+        $this->assertEquals('200 OK', $res->statusMessage);
+
+        $res->status = 304;
+
+        $this->assertEquals(304, $res->status);
+        $this->assertEquals('304 Not Modified', $res->statusMessage);
+    }
+
+    /**
+     * @expectedException     Server\Error
+     */
+    public function testSetInvalidStatusCodeThrowsError()
+    {
+        $res = new Response(new Request('GET', '/'));
+
+        $res->status = 0;
+    }
+
+    public function testGetStatusHeader()
+    {
+        $res = new Response(new Request('GET', '/'));
+
+        $this->assertEquals('HTTP/1.1 200 OK', $res->getStatusHeader());
+
+        $res->status = 304;
+
+        $this->assertEquals('HTTP/1.1 304 Not Modified', $res->getStatusHeader());
+    }
 }

@@ -27,14 +27,14 @@ class RequestTest extends Base
     {
         $req = new Request('GET', '/test');
 
-        $this->assertTrue(is_array($req->data));
+        $this->assertTrue(is_array($req->data->get()));
     }
 
     public function testGetHeaders()
     {
         $req = new Request('GET', '/test');
 
-        $this->assertTrue(is_array($req->headers));
+        $this->assertTrue(is_array($req->headers->get()));
     }
 
     public function testSetCustomProperty()
