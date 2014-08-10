@@ -1,6 +1,6 @@
 <?php
 
-// putenv('DEBUG=1');
+putenv('DEBUG=1');
 
 define('APP_PATH', __DIR__);
 
@@ -30,8 +30,8 @@ class Application extends Server\Application
             ])
 
             // employ application modules:
-            ->employ(['class' => 'About\Module', 'pattern' => '/about*uri'])
-            ->employ(['class' => 'Blog\Module', 'pattern' => '/blog*uri'])
+            ->employ(['class' => 'About\Module', 'pattern' => '/about*path'])
+            ->employ(['class' => 'Blog\Module', 'pattern' => '/blog*path'])
             ->employ(['class' => 'Cover\Module'])
 
             ->employ([
