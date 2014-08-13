@@ -5,10 +5,18 @@
 define('APP_PATH', __DIR__);
 
 require APP_PATH.'/../../vendor/autoload.php';
+
+// Application modules
 require APP_PATH.'/lib/cover/Module.php';
 require APP_PATH.'/lib/blog/Module.php';
 require APP_PATH.'/lib/blog/Controller.php';
 require APP_PATH.'/lib/about/Module.php';
+require APP_PATH.'/lib/auth/Module.php';
+require APP_PATH.'/lib/auth/Layer.php';
+require APP_PATH.'/lib/auth/Controller.php';
+require APP_PATH.'/lib/auth/Error.php';
+
+// UI modules
 require APP_PATH.'/lib/menu/Layer.php';
 require APP_PATH.'/lib/menu/View.php';
 
@@ -19,6 +27,7 @@ class Application extends Server\Application
         parent::__construct($next, $config, $env);
 
         $this
+
 
             // employ middleware:
             ->employ(['class' => 'Server\Middleware\Accept'])
@@ -32,6 +41,7 @@ class Application extends Server\Application
             ->employ(['class' => 'Server\Middleware\Session'])
             ->employ(['class' => 'Server\Middleware\Cookie'])
             ->employ(['class' => 'Server\Middleware\UAParser'])
+            ->employ(['class' => 'Auth\Layer'])
             ->employ(['class' => 'Server\Middleware\Safari304Workaround'])
             ->employ([
                 'class' => 'Server\Middleware\Cache',
@@ -51,6 +61,7 @@ class Application extends Server\Application
             ->employ(['class' => 'Server\Middleware\ErrorHandler'])
 
             // employ application modules:
+            ->employ(['class' => 'Auth\Module', 'pattern' => '/auth*path'])
             ->employ(['class' => 'About\Module', 'pattern' => '/about*path'])
             ->employ(['class' => 'Blog\Module', 'pattern' => '/blog*path'])
             ->employ(['class' => 'Cover\Module'])

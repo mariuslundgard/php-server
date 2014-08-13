@@ -18,12 +18,15 @@ class Layer extends Base
     {
         $res = parent::call($req, $err);
 
-        $res->data['menu'] = new View($this->master, $this->config->get('items', array()));
+        $res->data['menu'] = new View($this->master);
 
-        $res->data['menu']->addMenuItem([
-            'uri' => '/',
-            'label' => time()
-        ]);
+        foreach ($this->config->get('items', array()) as $item) {
+            $res->data['menu']->addMenuItem($item);
+        }
+
+        foreach ($this->config->get('actions', array()) as $item) {
+            $res->data['menu']->addActionItem($item);
+        }
 
         return $res;
     }

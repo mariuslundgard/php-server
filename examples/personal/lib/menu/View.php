@@ -12,36 +12,37 @@ class View extends Base
 
     protected $app;
     protected $menuItems;
+    protected $actions;
 
-    public function __construct(Application $app, array $menuItems = array())
+    public function __construct(Application $app)
     {
         parent::__construct(__DIR__.'/index.php', dirname(__DIR__));
 
         $this->app = $app;
         $this->menuItems = array();
-
-        $this->d('INITIAL MENU ITEMS', $menuItems);
-
-        foreach ($menuItems as $item) {
-            $this->addMenuItem($item);
-        }
+        $this->actions = array();
     }
 
     public function render(array $data = array(), $includePath = null)
     {
-        // var_dump($this->menuItems);
-
         return parent::render(array(
             'app' => $this->app,
-            'menuItems' => $this->menuItems
+            'menuItems' => $this->menuItems,
+            'actions' => $this->actions
         ) + $data, $includePath);
     }
 
     public function addMenuItem($params)
     {
-        // var_dump($params);
-
         $this->menuItems[] = $params + array(
+            'uri' => '/',
+            'label' => '[Menu Item Label]'
+        );
+    }
+
+    public function addActionItem($params)
+    {
+        $this->actions[] = $params + array(
             'uri' => '/',
             'label' => '[Menu Item Label]'
         );
