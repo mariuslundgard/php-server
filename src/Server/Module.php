@@ -68,7 +68,7 @@ class Module extends Stack
                 $params += array( 'pattern' => null );
                 $matchParams = array();
                 if (! $params['pattern'] || is_array($matchParams = RequestMatcher::matches($req, $params, $this->config['path']))) {
-                    // $this->d('MATCHING ROUTE ', $matchParams);
+                    $this->d('MATCHING ROUTE ', $params, $matchParams);
                     $topLevelApp->setState(static::STATE_DONE);
 
                     return $this->process($req, $this->getNextResponse($req, $err), $params, $matchParams);
@@ -87,6 +87,10 @@ class Module extends Stack
 
             if (! class_exists($params['controller'])) {
                 throw new Error('The controller was not found: '.$params['controller']);
+            }
+
+            if (! is_subclass_of($params['controller'], 'Server\Controller')) {
+                throw new Error('The provided controller is not a subclass of Server\Controller: '.$params['controller']);
             }
 
             // TODO: use Instantiator?
