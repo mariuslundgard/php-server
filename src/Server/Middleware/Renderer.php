@@ -22,11 +22,11 @@ class Renderer extends Layer
     public function call(Request $req = null, Error $err = null)
     {
         if (! $this->config['viewPath']) {
-            throw new Error('Missing the `viewPath` parameter');
+            return $this->getNextResponse($req, new Error('Missing the `viewPath` parameter'));
         }
 
         if (! file_exists($this->config['viewPath'])) {
-            throw new Error('The view path does not exist: '.$this->config['viewPath']);
+            return $this->getNextResponse($req, new Error('The view path does not exist: '.$this->config['viewPath']));
         }
 
         return $this->render($req, parent::call($req, $err));
@@ -42,7 +42,7 @@ class Renderer extends Layer
         if ($view) {
             $viewPathName = $this->config['viewPath'].'/'.$view.'.php';
             if (! file_exists($viewPathName)) {
-                throw new Error('The view file does not exist: '.$viewPathName);
+                return $this->getNextResponse($req, new Error('The view file does not exist: '.$viewPathName));
             }
             $view = new View($viewPathName);
             $res->body = $view->render($res->data->get(), $this->config['viewPath']);

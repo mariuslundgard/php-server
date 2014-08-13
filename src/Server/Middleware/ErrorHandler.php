@@ -36,24 +36,29 @@ class ErrorHandler extends Layer
     {
         // $this->d('call()', $req->dump());
 
+        if ($err) {
+            echo 'Error: '.$err->getMessage();
+            exit;
+        }
+
         if (! $err) {
 
             // get application response
             try {
 
                 //
-                $res = parent::call($req);
+                return parent::call($req);
 
                 //
-                if (! $res) {
-                    throw new Error('No response');
-                }
+                // if (! $res) {
+                //     throw new Error('No response');
+                // }
 
-            } catch (Error $err) {
-                // do nothing but get variable reference
+            // } catch (Error $err) {
             } catch (Exception $err) {
+                // do nothing but get variable reference
                 // create studio http error object
-                $err = new Error($err->getMessage());
+                // $err = new Error($err->getMessage());
             }
         }
 
@@ -66,6 +71,9 @@ class ErrorHandler extends Layer
 
             // set response status code
             $res->status = $err->getCode() < 400 ? 500 : $err->getCode();
+
+            // echo $res->status;
+            // exit;
 
             // set error data
             $res->data->set(compact('err', 'req', 'res') + [

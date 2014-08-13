@@ -42,9 +42,117 @@ class Cache extends Layer
         ]);
     }
 
+    public function call(Request $req, Error $err = null)
+    {
+        if (property_exists($req, 'ignoreCache') && $req->ignoreCache) {
+            return $this->getNextResponse($req, $err);
+        }
+
+        if (! $this->config['dirPath']) {
+            // return parent::call($req, new Error('Missing `dirPath` parameter for the cache layer'));
+            throw new Error('Missing `dirPath` parameter for the cache layer');
+        }
+
+        if ($err || ! $this->config['use'] || ! $this->requestIsCacheable($req)) {
+            return $this->getNextResponse($req, $err);
+        }
+
+        $req->cache = $this;
+
+        // skip when `use` is FALSE and on errors
+        // if (! $this->config->get('use', true) && $err) {
+            // return parent::call($req, $err);
+        // }
+
+        // var_dump($req->headers->get('Cache-Control'));
+        // exit;
+
+        // $connection = $req->headers['Connection'];
+        // $maxAge = isset($req->headers['Cache-Control']['max-age'])
+        //     ? $req->headers['Cache-Control']['max-age']
+        //     : $this->config['defaultTimeout'];
+
+        // ;
+        return ($res = $this->getCachedResponse($req)) ? $res : parent::call($req);
+    }
+
+    public function getCachedResponse(Request $req)
+    {
+        // parse the `Cache-Control` header
+        if ($header = $req->headers['Cache-Control']) {
+            $req->headers['Cache-Control'] = HttpParser::parseDict($header);
+        }
+
+        $maxAge = intval($req->headers->get('Cache-Control.max-age', $this->config['defaultTimeout']));
+
+        $this->d('MAX AGE = '.$maxAge);
+
+        // get dates
+        if ($ifModifiedSince = $req->headers['If-Modified-Since']) {
+            $this->d('IF MODIFIED SINCE `'.$ifModifiedSince.'`');
+            $ifModifiedSince = strtotime($ifModifiedSince);
+        }
+
+        $res = $this->read($req);
+
+        if (! $res) {
+            if ($res = parent::call($req)) {
+
+                if (400 <= $res->status) {
+                    return $res;
+                }
+
+                $this->d('OK TO STORE CACHE');
+                $this->write($req, $res, $maxAge);
+            }
+        }
+
+        if ($lastModified = $res->headers['Last-Modified']) {
+            $this->d('CONTENT LAST MODIFIED `'.$lastModified.'`');
+            $lastModified = strtotime($lastModified);
+        }
+
+        // send a 304 response if nothing has changed
+        // note: this will send an empty body!
+        if ($lastModified && $ifModifiedSince) {
+            if ($lastModified <= $ifModifiedSince) {
+                $this->d('CONTENT NOT MODIFIED');
+                $res->status = 304;
+            } else {
+                $this->d('CONTENT WAS MODIFIED');
+            }
+        }
+
+        /*
+        // set the `Cache-Control` header
+        $res->headers['Cache-Control'] = [
+            // 'no-cache',
+            // 'no-store',
+            // 'max-age' => 1, // 1 second
+            'max-age' => 60 * 60 * 24, // 1 day
+            // 'min-fresh' => 60,
+            // 'no-transform',
+            // 'only-if-cached',
+            'public',
+            // 'private',
+            // 'no-cache' (=field_name),
+            // 'no-transform',
+            // 'must-revalidate',
+            // 'proxy-revalidate',
+            // 'max-age' => 60,
+            // 's-maxage' => 60,
+            // 'post-check' => 0,
+            // 'pre-check' => 0,
+            // 'no-cache'
+        ];
+        */
+
+        return $res;
+    }
+
     public function read(Request $req)
     {
-        $this->d('READ CACHE');
+        $this->d('ATTEMPT TO READ CACHE');
 
         $cachePathName = $this->getCachePath($req);
 
@@ -58,11 +166,15 @@ class Cache extends Layer
             }
         }
 
+        $this->d('NO CACHE FOUND');
+
         return null;
     }
 
     public function write(Request $req, Response $res, $timeout)
     {
+        $this->d('ATTEMPT TO WRITE CACHE');
+
         //
         $cachePathName = $this->getCachePath($req);
 
@@ -92,129 +204,6 @@ class Cache extends Layer
         // $res->headers['Vary'] = 'Accept-Encoding';
     }
 
-    public function call(Request $req, Error $err = null)
-    {
-        d('CACHE LAYER');
-
-        if ($err) {
-            return parent::call($req, $err);
-        }
-
-        if (! $this->config['dirPath']) {
-            // return parent::call($req, new Error('Missing `dirPath` parameter for the cache layer'));
-            throw new Error('Missing `dirPath` parameter for the cache layer');
-        }
-
-        // skip when `use` is FALSE and on errors
-        if (! $this->config->get('use', true) && $err) {
-            return parent::call($req, $err);
-        }
-
-        // var_dump($req->headers->get('Cache-Control'));
-        // exit;
-
-        // $connection = $req->headers['Connection'];
-        // $maxAge = isset($req->headers['Cache-Control']['max-age'])
-        //     ? $req->headers['Cache-Control']['max-age']
-        //     : $this->config['defaultTimeout'];
-
-        // ;
-        return ($res = $this->getCachedResponse($req))
-            ? $res
-            : parent::call($req);
-    }
-
-    public function getCachedResponse(Request $req)
-    {
-        $res = null;
-
-        if ($this->requestIsCacheable($req)) {
-
-            // parse the `Cache-Control` header
-            if ($header = $req->headers['Cache-Control']) {
-                $req->headers['Cache-Control'] = HttpParser::parseDict($header);
-            }
-
-            $maxAge = intval($req->headers->get('Cache-Control.max-age', $this->config['defaultTimeout']));
-
-            // if (0 === $maxAge) {
-            //     $this->d('IGNORE CACHE');
-            //     return parent::call($req);
-            // }
-
-            $this->d('MAX AGE = '.$maxAge);
-
-            // get dates
-            $ifModifiedSince = strtotime($req->headers['If-Modified-Since']);
-            $this->d('IF MODIFIED SINCE `'.date('Y-m-d H:i:s', $ifModifiedSince).'`');
-            // $this->d($res->headers->get());
-
-            $res = $this->read($req);
-
-            if (! $res) {
-                $this->d('GENERATE CACHE');
-
-                if ($res = parent::call($req)) {
-                    $this->d('WRITE CACHE');
-
-                    $this->write($req, $res, $maxAge);
-                }
-            }
-
-            $this->d('RETURN CACHED RESPONSE');
-
-            // var_dump($maxAge);
-            // $this->d('-- REQUEST');
-            // $this->d($req->headers->get());
-            // $this->d('-- RESPONSE');
-            // $this->d($res->headers->get());
-            // $this->d(htmlspecialchars($res->body));
-            // exit;
-            $lastModified = strtotime($res->headers['Last-Modified']);
-            $this->d('LAST MODIFIED `'.date('Y-m-d H:i:s', $lastModified).'`');
-
-            // send a 304 response if nothing has changed
-            // note: this will send an empty body!
-            if ($lastModified && $ifModifiedSince) {
-                if ($lastModified <= $ifModifiedSince) {
-                    $this->d('====> CACHE IS NOT MODIFIED');
-                    $res->status = 304;
-                    // var_dump($res);
-                    // exit;
-                } else {
-                    $this->d('CACHE IS MODIFIED');
-                }
-            }
-
-            /*
-                // set the `Cache-Control` header
-                $res->headers['Cache-Control'] = [
-                    // 'no-cache',
-                    // 'no-store',
-                    // 'max-age' => 1, // 1 second
-                    'max-age' => 60 * 60 * 24, // 1 day
-                    // 'min-fresh' => 60,
-                    // 'no-transform',
-                    // 'only-if-cached',
-                    'public',
-                    // 'private',
-                    // 'no-cache' (=field_name),
-                    // 'no-transform',
-                    // 'must-revalidate',
-                    // 'proxy-revalidate',
-                    // 'max-age' => 60,
-                    // 's-maxage' => 60,
-                    // 'post-check' => 0,
-                    // 'pre-check' => 0,
-                    // 'no-cache'
-                ];
-
-        */
-        }
-
-        return $res;
-    }
-
     public function setLastModifiedHeaderFromTimestamp(Response $res, $timestamp)
     {
         $res->headers['Last-Modified'] = gmdate('D, d M Y H:i:s ', $timestamp) . 'GMT';
@@ -222,7 +211,7 @@ class Cache extends Layer
 
     public function requestIsCacheable(Request $req)
     {
-        return is_dir($this->config['dirPath']) && in_array($req->method, ['GET', 'HEAD']);
+        return in_array($req->method, ['GET', 'HEAD']);
     }
 
     public function getCacheKey(Request $req)
@@ -248,17 +237,13 @@ class Cache extends Layer
 
     public function unpackResponse(Request $req, $data)
     {
-        $this->d('UNPACKING');
+        $this->d('UNPACK CACHED RESPONSE');
 
         $data = unserialize($data);
 
         if (! isset($data['headers']) || ! isset($data['body'])) {
             throw new Error('The cache data is corrupted');
         }
-
-        $this->d('GOT CACHE');
-        // exit;
-        $this->d('CACHE EXISTS');
 
         // create an empty response
         $res = new Response($req);
@@ -267,12 +252,12 @@ class Cache extends Layer
         $res->body = $data['body'];
 
         return $res;
-
-        // return $res;
     }
 
     public function packResponse(Response $res)
     {
+        $this->d('PACK RESPONSE CACHE');
+
         return serialize([
             'headers' => $res->headers->get(),
             'body' => $res->body,
