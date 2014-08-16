@@ -79,4 +79,20 @@ class RequestTest extends Base
 
         $this->assertEquals('1.1', $req->version);
     }
+
+    public function testDump()
+    {
+        $req = new Request('GET', '/foo/bar');
+
+        $this->assertEquals(array(
+            'scheme' => 'HTTP',
+            'version' => '1.1',
+            'method' => 'GET',
+            'uri' => '/foo/bar',
+            'path' => '/foo/bar',
+            'query' => '',
+            'data' => array(),
+            'headers' => array(),
+        ), $req->dump());
+    }
 }

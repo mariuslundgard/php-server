@@ -20,7 +20,7 @@ class ResponseTest extends Base
         // $this->assertInstanceOf('Server\Response', $res);
         $this->assertTrue(is_array($res->headers->get()));
         $this->assertInstanceOf('Util\Dictionary', $res->data);
-        $this->assertEquals('text/html', $res->type);
+        $this->assertEquals('text/plain', $res->type);
     }
 
     public function testSetType()
