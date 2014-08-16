@@ -28,7 +28,6 @@ class Application extends Server\Application
 
         $this
 
-
             // employ middleware:
             ->employ(['class' => 'Server\Middleware\Accept'])
             ->employ([
@@ -45,10 +44,7 @@ class Application extends Server\Application
             ->employ(['class' => 'Server\Middleware\Safari304Workaround'])
             ->employ([
                 'class' => 'Server\Middleware\Cache',
-                'config' => [
-                    'dirPath' => APP_PATH.'/cache',
-                    'pattern' => '{:scheme}://{:host}{:uri}/{:locale}'
-                ],
+                'config' => $this->config->get('cache', array()),
             ])
             ->employ([
                 'class' => 'Server\Middleware\Renderer',
@@ -81,5 +77,10 @@ class Application extends Server\Application
 
 Application::create(null, [
     'title' => _('A Personal Site'),
-    'basePath' => '/examples/personal'
+    'basePath' => '/examples/personal',
+
+    // configure `cache`
+    'cache.useResponseCache' => false,
+    'cache.dirPath' => APP_PATH.'/cache',
+    'cache.pattern' => '{:scheme}://{:host}{:uri}/{:locale}'
 ], $_SERVER)->call()->send();
