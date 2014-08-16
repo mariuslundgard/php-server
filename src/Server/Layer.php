@@ -57,10 +57,10 @@ class Layer implements LayerInterface
         return true;
     }
 
-    public function call(Request $req, Error $err = null)
+    public function call(Request $req = null, Error $err = null)
     {
         // $this->d('Layer.call('.($req ? '`'.$req->method.' '.$this->config->get('uri', $req->uri).'`' : 'NULL').')');
-        return $this->getNextResponse($req, $err);
+        return $this->getNextResponse($req ? $req : $this->getCurrentRequest(), $err);
     }
 
     public function getCurrentRequest()
