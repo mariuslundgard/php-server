@@ -34,6 +34,37 @@ class Renderer extends Layer
 
     public function render(Request $req, Response $res)
     {
+        if ($res->length) {
+            return $res;
+        }
+
+        switch ($res->type) {
+
+            case 'application/json':
+                return $this->renderJson($req, $res);
+
+            case 'text/html':
+                return $this->renderHtml($req, $res);
+
+            default:
+                throw new Error('Unsupported response type: '.$res->type);
+        }
+    }
+
+    public function renderJson(Request $req, Response $res)
+    {
+        $data = $res->data->get();
+
+        unset($data['app'], $data['req'], $data['res'], $data['menu']);
+
+        $res->body = json_encode($data, JSON_PRETTY_PRINT);
+
+        return $res;
+    }
+
+    public function renderHtml(Request $req, Response $res)
+    {
+        
         $res->data->set(array('app' => $this->master) + compact('req', 'res'));
 
         $view = $res->data->get('view', $this->config['defaultView']);
