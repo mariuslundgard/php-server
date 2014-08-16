@@ -110,7 +110,7 @@ class Response
                 return $this->data;
 
             case 'type':
-                return $this->headers->get('Content-Type', 'text/plain');
+                return $this->headers->get('Content-Type', 'text/html');
 
             default:
                 throw new Error('Nonexisting response property: '.$property);
