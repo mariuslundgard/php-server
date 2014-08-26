@@ -44,7 +44,7 @@ class Cache extends Layer
 
     public function call(Request $req, Error $err = null)
     {
-        if ($this->config['useResponseCache'] || (property_exists($req, 'ignoreCache') && $req->ignoreCache)) {
+        if (! $this->config['useResponseCache'] || (property_exists($req, 'ignoreCache') && $req->ignoreCache)) {
             return $this->getNextResponse($req, $err);
         }
 
