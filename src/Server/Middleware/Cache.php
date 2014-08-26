@@ -53,7 +53,7 @@ class Cache extends Layer
             throw new Error('Missing `dirPath` parameter for the cache layer');
         }
 
-        if ($err || ! $this->config['use'] || ! $this->requestIsCacheable($req)) {
+        if ($err /*|| ! $this->config['use'] */ || ! $this->requestIsCacheable($req)) {
             return $this->getNextResponse($req, $err);
         }
 
@@ -85,7 +85,7 @@ class Cache extends Layer
 
         $maxAge = intval($req->headers->get('Cache-Control.max-age', $this->config['defaultTimeout']));
 
-        $this->d('MAX AGE = '.$maxAge);
+        // $this->d('MAX AGE = '.$maxAge);
 
         // get dates
         if ($ifModifiedSince = $req->headers['If-Modified-Since']) {
