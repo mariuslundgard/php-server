@@ -14,7 +14,9 @@
     <target name="build" depends="prepare,lint,php-cs-fixer-dry-run,phpcs-ci,checkstyle-cli,phpmd,pmd-cli,phpcpd,phpunit,phpunit-noxdebug,pdepend,junit-cli"/>
 
     <!-- Build (CI) -->
-    <target name="build-ci" depends="prepare,lint,apigen,phploc,phpcb,php-cs-fixer-dry-run,phpcs-ci,phpmd-ci,phpcpd,phpunit,pdepend"/>
+    <!-- <target name="build-ci" depends="prepare,lint,apigen,phploc,phpcb,php-cs-fixer-dry-run,phpcs-ci,phpmd-ci,phpcpd,phpunit,pdepend"/> -->
+    <!-- without apigen: -->
+    <target name="build-ci" depends="prepare,lint,phploc,phpcb,php-cs-fixer-dry-run,phpcs-ci,phpmd-ci,phpcpd,phpunit,pdepend"/>
 
     <!-- Test -->
     <target name="test" depends="prepare,lint,phpunit,pdepend"/>
@@ -23,7 +25,9 @@
     <target name="analysis" depends="prepare,lint,php-cs-fixer-dry-run,phpcs,phpmd,phpcpd" description="Analyze"/>
 
     <!-- Generate documentation -->
-    <target name="doc" depends="prepare,lint,apigen,checkstyle-cli" description="Generate documentation"/>
+    <!-- <target name="doc" depends="prepare,lint,apigen,checkstyle-cli" description="Generate documentation"/> -->
+    <!-- without apigen: -->
+    <target name="doc" depends="prepare,lint,checkstyle-cli" description="Generate documentation"/>
 
     <!-- Prepare for build -->
     <target name="prepare" depends="clean" description="Prepare for build">
@@ -130,7 +134,8 @@
     </target>
 
     <!-- Generate API documentation -->
-    <target name="apigen" description="Generate API documentation using apigen">
+    <!-- Ooops! See '- -' below: -->
+    <!-- <target name="apigen" description="Generate API documentation using apigen">
         <exec executable="php">
             <arg value="-n"/>
             <arg path="${basedir}/vendor/bin/apigen.php"/>
@@ -140,16 +145,16 @@
             <arg path="${basedir}/build/api"/>
             <arg value="-s"/>
             <arg path="${basedir}/src"/>
-            <arg value="--report"/>
+            <arg value="- -report"/>
             <arg path="${basedir}/build/logs/checkstyle-apigen.xml"/>
-            <arg value="--exclude"/>
+            <arg value="- -exclude"/>
             <arg value="*Test.php"/>
-            <arg value="--exclude"/>
+            <arg value="- -exclude"/>
             <arg value="*/Tests/*"/>
             <arg value="google-analytics"/>
             <arg value="UA-xxxxxx-x"/>
         </exec>
-    </target>
+    </target> -->
 
     <target name="phploc" description="Measure project size using PHPLOC">
         <exec executable="${basedir}/vendor/bin/phploc">

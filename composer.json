@@ -29,7 +29,6 @@
         "theseer/fdomdocument": "dev-master",
         "squizlabs/php_codesniffer": "~1.4",
         "nette/nette": "~2.1.3",
-        "apigen/apigen": "~2.8",
         "satooshi/php-coveralls": "dev-master"
     },
     "repositories": [
